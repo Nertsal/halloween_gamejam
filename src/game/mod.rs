@@ -3,6 +3,7 @@ use geng::Camera2d;
 use super::*;
 
 mod constants;
+mod draw;
 mod health;
 mod knight;
 mod particle;
@@ -57,54 +58,11 @@ impl GameState {
 
 impl geng::State for GameState {
     fn draw(&mut self, framebuffer: &mut ugli::Framebuffer) {
-        self.framebuffer_size = framebuffer.size().map(|x| x as f32);
-        ugli::clear(framebuffer, Some(constants::BACKGROUND_COLOR), None);
-
-        // Draw particles
-        for particle in &self.particles {
-            self.geng.draw_2d().circle(
-                framebuffer,
-                &self.camera,
-                particle.circle.position,
-                particle.circle.radius,
-                particle.color,
-            );
-        }
-
-        // Draw skeletons
-        for skeleton in &self.skeletons {
-            self.geng.draw_2d().textured_quad(
-                framebuffer,
-                &self.camera,
-                AABB::point(skeleton.circle.position).extend_uniform(skeleton.circle.radius),
-                &skeleton.texture,
-                Color::WHITE,
-            );
-        }
-
-        // Draw knights
-        for knight in &self.knights {
-            self.geng.draw_2d().textured_quad(
-                framebuffer,
-                &self.camera,
-                AABB::point(knight.circle.position).extend_uniform(knight.circle.radius),
-                &knight.texture,
-                Color::WHITE,
-            );
-        }
-
-        // Draw player
-        self.geng.draw_2d().textured_quad(
-            framebuffer,
-            &self.camera,
-            AABB::point(self.player.circle.position).extend_uniform(self.player.circle.radius),
-            &self.player.texture,
-            Color::WHITE,
-        );
+        self.draw_impl(framebuffer);
     }
 
     fn update(&mut self, delta_time: f64) {
-        self.update(delta_time as f32);
+        self.update_impl(delta_time as f32);
     }
 
     fn handle_event(&mut self, event: geng::Event) {

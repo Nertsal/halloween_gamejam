@@ -1,7 +1,7 @@
 use super::*;
 
 impl GameState {
-    pub fn update(&mut self, delta_time: f32) {
+    pub fn update_impl(&mut self, delta_time: f32) {
         self.update_player();
         self.update_skeletons(delta_time);
         self.update_particles(delta_time);

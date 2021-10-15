@@ -14,4 +14,8 @@ impl Health {
         self.current = self.current.clamp(0.0, self.max);
         self.current <= 0.0
     }
+
+    pub fn fraction(&self) -> f32 {
+        self.current / self.max
+    }
 }
