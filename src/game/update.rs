@@ -61,14 +61,14 @@ impl GameState {
                     *time_left -= delta_time;
                     if *time_left <= 0.0 {
                         skeleton.state = SkeletonState::Alive;
+                        particles.push((
+                            skeleton.position,
+                            0.25,
+                            3.0,
+                            Color::rgba(0.5, 0.5, 0.5, constants::PARTICLE_ALPHA),
+                            50,
+                        ));
                     }
-                    particles.push((
-                        skeleton.position,
-                        0.2,
-                        3.0,
-                        Color::rgba(0.5, 0.5, 0.5, constants::PARTICLE_ALPHA),
-                        1,
-                    ));
                 }
                 SkeletonState::Alive => (),
             }
