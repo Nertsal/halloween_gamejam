@@ -89,7 +89,7 @@ fn main() {
     }
 
     // Intialize geng
-    let geng = Geng::new("Unstable Asteroids");
+    let geng = Geng::new("Skelemancer");
     let assets = <Assets as geng::LoadAsset>::load(&geng, ".");
 
     // Run
