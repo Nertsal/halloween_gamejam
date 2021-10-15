@@ -12,21 +12,21 @@ impl GameState {
 
     fn movement(&mut self, delta_time: f32) {
         // Player
-        self.player.position += self.player.velocity * delta_time;
+        self.player.circle.position += self.player.velocity * delta_time;
 
         // Skeletons
         for skeleton in &mut self.skeletons {
-            skeleton.position += skeleton.velocity * delta_time;
+            skeleton.circle.position += skeleton.velocity * delta_time;
         }
 
         // Knigths
         for knight in &mut self.knights {
-            knight.position += knight.velocity * delta_time;
+            knight.circle.position += knight.velocity * delta_time;
         }
 
         // Particles
         for particle in &mut self.particles {
-            particle.position += particle.velocity * delta_time;
+            particle.circle.position += particle.velocity * delta_time;
         }
     }
 
@@ -62,7 +62,7 @@ impl GameState {
                     if *time_left <= 0.0 {
                         skeleton.state = SkeletonState::Alive;
                         particles.push((
-                            skeleton.position,
+                            skeleton.circle.position,
                             0.25,
                             3.0,
                             Color::rgba(0.5, 0.5, 0.5, constants::PARTICLE_ALPHA),

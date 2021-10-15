@@ -3,14 +3,18 @@ use geng::Camera2d;
 use super::*;
 
 mod constants;
+mod health;
 mod knight;
 mod particle;
+mod physics;
 mod player;
 mod skeleton;
 mod update;
 
+use health::*;
 use knight::*;
 use particle::*;
+use physics::*;
 use player::*;
 use skeleton::*;
 
@@ -39,9 +43,9 @@ impl GameState {
             framebuffer_size: vec2(1.0, 1.0),
 
             player: Player::new(
-                Vec2::ZERO,
-                constants::PLAYER_SPEED,
+                Circle::new(Vec2::ZERO, constants::PLAYER_SPEED),
                 constants::PLAYER_RADIUS,
+                Health::new(constants::PLAYER_HEALTH),
                 &assets.sprites.necromancer,
             ),
             skeletons: vec![],
@@ -61,8 +65,8 @@ impl geng::State for GameState {
             self.geng.draw_2d().circle(
                 framebuffer,
                 &self.camera,
-                particle.position,
-                particle.radius,
+                particle.circle.position,
+                particle.circle.radius,
                 particle.color,
             );
         }
@@ -72,7 +76,7 @@ impl geng::State for GameState {
             self.geng.draw_2d().textured_quad(
                 framebuffer,
                 &self.camera,
-                AABB::point(skeleton.position).extend_uniform(skeleton.radius),
+                AABB::point(skeleton.circle.position).extend_uniform(skeleton.circle.radius),
                 &skeleton.texture,
                 Color::WHITE,
             );
@@ -83,7 +87,7 @@ impl geng::State for GameState {
             self.geng.draw_2d().textured_quad(
                 framebuffer,
                 &self.camera,
-                AABB::point(knight.position).extend_uniform(knight.radius),
+                AABB::point(knight.circle.position).extend_uniform(knight.circle.radius),
                 &knight.texture,
                 Color::WHITE,
             );
@@ -93,7 +97,7 @@ impl geng::State for GameState {
         self.geng.draw_2d().textured_quad(
             framebuffer,
             &self.camera,
-            AABB::point(self.player.position).extend_uniform(self.player.radius),
+            AABB::point(self.player.circle.position).extend_uniform(self.player.circle.radius),
             &self.player.texture,
             Color::WHITE,
         );

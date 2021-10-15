@@ -1,18 +1,16 @@
 use super::*;
 
 pub struct Knight {
-    pub position: Vec2<f32>,
-    pub radius: f32,
+    pub circle: Circle,
     pub speed: f32,
     pub velocity: Vec2<f32>,
     pub texture: Texture,
 }
 
 impl Knight {
-    pub fn new(position: Vec2<f32>, radius: f32, speed: f32, texture: &Texture) -> Self {
+    pub fn new(circle: Circle, speed: f32, texture: &Texture) -> Self {
         Self {
-            position,
-            radius,
+            circle,
             speed,
             velocity: Vec2::ZERO,
             texture: texture.clone(),
@@ -23,8 +21,7 @@ impl Knight {
 impl GameState {
     pub fn spawn_knight(&mut self, position: Vec2<f32>) {
         let knight = Knight::new(
-            position,
-            constants::KNIGHT_RADIUS,
+            Circle::new(position, constants::KNIGHT_RADIUS),
             constants::KNIGHT_SPEED,
             &self.assets.sprites.knight,
         );

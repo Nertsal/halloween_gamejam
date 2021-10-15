@@ -1,21 +1,21 @@
 use super::*;
 
 pub struct Player {
-    pub position: Vec2<f32>,
+    pub circle: Circle,
     pub speed: f32,
     pub velocity: Vec2<f32>,
-    pub radius: f32,
     pub texture: Texture,
+    pub health: Health,
 }
 
 impl Player {
-    pub fn new(position: Vec2<f32>, speed: f32, radius: f32, texture: &Texture) -> Self {
+    pub fn new(circle: Circle, speed: f32, health: Health, texture: &Texture) -> Self {
         Self {
-            position,
+            circle,
             speed,
-            radius,
             velocity: Vec2::ZERO,
             texture: texture.clone(),
+            health,
         }
     }
 }

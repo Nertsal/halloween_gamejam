@@ -1,17 +1,15 @@
 use super::*;
 
 pub struct Particle {
-    pub position: Vec2<f32>,
-    pub radius: f32,
+    pub circle: Circle,
     pub velocity: Vec2<f32>,
     pub color: Color<f32>,
 }
 
 impl Particle {
-    pub fn new(position: Vec2<f32>, radius: f32, velocity: Vec2<f32>, color: Color<f32>) -> Self {
+    pub fn new(circle: Circle, velocity: Vec2<f32>, color: Color<f32>) -> Self {
         Self {
-            position,
-            radius,
+            circle,
             velocity,
             color,
         }
@@ -30,7 +28,7 @@ impl GameState {
         self.particles.reserve(amount);
         for _ in 0..amount {
             let velocity = random_direction() * speed;
-            let particle = Particle::new(position, radius, velocity, color);
+            let particle = Particle::new(Circle::new(position, radius), velocity, color);
             self.particles.push(particle);
         }
     }
