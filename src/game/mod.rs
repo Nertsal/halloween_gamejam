@@ -29,7 +29,7 @@ impl geng::State for GameState {
             framebuffer,
             &self.camera,
             AABB::ZERO.extend_uniform(5.0),
-            &self.assets.sprites.necromancer,
+            &self.assets.sprites.knight,
             Color::WHITE,
         );
     }

@@ -11,12 +11,14 @@ pub struct Assets {
 struct Sprites {
     skeleton: ugli::Texture,
     necromancer: ugli::Texture,
+    knight: ugli::Texture,
 }
 
 impl Sprites {
     fn init(&mut self) {
         self.skeleton.set_filter(ugli::Filter::Nearest);
         self.necromancer.set_filter(ugli::Filter::Nearest);
+        self.knight.set_filter(ugli::Filter::Nearest);
     }
 }
 
