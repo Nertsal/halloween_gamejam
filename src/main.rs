@@ -2,23 +2,31 @@ use geng::prelude::*;
 
 mod game;
 
+type Texture = Rc<ugli::Texture>;
+
 #[derive(geng::Assets)]
-pub struct Assets {
+struct Assets {
     sprites: Sprites,
 }
 
 #[derive(geng::Assets)]
 struct Sprites {
-    skeleton: ugli::Texture,
-    necromancer: ugli::Texture,
-    knight: ugli::Texture,
+    skeleton: Texture,
+    necromancer: Texture,
+    knight: Texture,
+}
+
+macro_rules! sprites_init {
+    ($($texture:expr),*) => {
+        $(
+            Rc::get_mut(&mut $texture).unwrap().set_filter(ugli::Filter::Nearest);
+        )*
+    };
 }
 
 impl Sprites {
     fn init(&mut self) {
-        self.skeleton.set_filter(ugli::Filter::Nearest);
-        self.necromancer.set_filter(ugli::Filter::Nearest);
-        self.knight.set_filter(ugli::Filter::Nearest);
+        sprites_init!(self.skeleton, self.necromancer, self.knight);
     }
 }
 
