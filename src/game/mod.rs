@@ -44,8 +44,8 @@ impl GameState {
             framebuffer_size: vec2(1.0, 1.0),
 
             player: Player::new(
-                Circle::new(Vec2::ZERO, constants::PLAYER_SPEED),
-                constants::PLAYER_RADIUS,
+                Circle::new(Vec2::ZERO, constants::PLAYER_RADIUS),
+                constants::PLAYER_SPEED,
                 Health::new(constants::PLAYER_HEALTH),
                 &assets.sprites.necromancer,
             ),
