@@ -9,3 +9,6 @@ pub const BACKGROUND_COLOR: Color<f32> = Color {
 
 pub const PLAYER_SPEED: f32 = 10.0;
 pub const PLAYER_RADIUS: f32 = 2.5;
+
+pub const SKELETON_SPEED: f32 = 12.5;
+pub const SKELETON_RADIUS: f32 = 2.5;

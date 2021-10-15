@@ -3,7 +3,20 @@ use super::*;
 impl GameState {
     pub fn update(&mut self, delta_time: f32) {
         self.control_player();
+        self.control_skeletons();
+
         self.move_player(delta_time);
+        self.move_skeletons(delta_time);
+    }
+
+    fn move_player(&mut self, delta_time: f32) {
+        self.player.position += self.player.velocity * delta_time;
+    }
+
+    fn move_skeletons(&mut self, delta_time: f32) {
+        for skeleton in &mut self.skeletons {
+            skeleton.position += skeleton.velocity * delta_time;
+        }
     }
 
     fn control_player(&mut self) {
@@ -28,7 +41,5 @@ impl GameState {
         self.player.velocity = self.player.speed * move_direction;
     }
 
-    fn move_player(&mut self, delta_time: f32) {
-        self.player.position += self.player.velocity * delta_time;
-    }
+    fn control_skeletons(&mut self) {}
 }
