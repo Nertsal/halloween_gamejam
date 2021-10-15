@@ -3,10 +3,12 @@ use geng::Camera2d;
 use super::*;
 
 mod constants;
+mod particle;
 mod player;
 mod skeleton;
 mod update;
 
+use particle::*;
 use player::*;
 use skeleton::*;
 
@@ -18,6 +20,7 @@ pub(crate) struct GameState {
 
     player: Player,
     skeletons: Vec<Skeleton>,
+    particles: Vec<Particle>,
 }
 
 impl GameState {
@@ -39,6 +42,7 @@ impl GameState {
                 &assets.sprites.necromancer,
             ),
             skeletons: vec![],
+            particles: vec![],
         }
     }
 }
@@ -47,6 +51,17 @@ impl geng::State for GameState {
     fn draw(&mut self, framebuffer: &mut ugli::Framebuffer) {
         self.framebuffer_size = framebuffer.size().map(|x| x as f32);
         ugli::clear(framebuffer, Some(constants::BACKGROUND_COLOR), None);
+
+        // Draw particles
+        for particle in &self.particles {
+            self.geng.draw_2d().circle(
+                framebuffer,
+                &self.camera,
+                particle.position,
+                particle.radius,
+                particle.color,
+            );
+        }
 
         // Draw skeletons
         for skeleton in &self.skeletons {
