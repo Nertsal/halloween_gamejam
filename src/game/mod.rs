@@ -3,11 +3,13 @@ use geng::Camera2d;
 use super::*;
 
 mod constants;
+mod knight;
 mod particle;
 mod player;
 mod skeleton;
 mod update;
 
+use knight::*;
 use particle::*;
 use player::*;
 use skeleton::*;
@@ -20,6 +22,7 @@ pub(crate) struct GameState {
 
     player: Player,
     skeletons: Vec<Skeleton>,
+    knights: Vec<Knight>,
     particles: Vec<Particle>,
 }
 
@@ -42,6 +45,7 @@ impl GameState {
                 &assets.sprites.necromancer,
             ),
             skeletons: vec![],
+            knights: vec![],
             particles: vec![],
         }
     }
@@ -74,6 +78,17 @@ impl geng::State for GameState {
             );
         }
 
+        // Draw knights
+        for knight in &self.knights {
+            self.geng.draw_2d().textured_quad(
+                framebuffer,
+                &self.camera,
+                AABB::point(knight.position).extend_uniform(knight.radius),
+                &knight.texture,
+                Color::WHITE,
+            );
+        }
+
         // Draw player
         self.geng.draw_2d().textured_quad(
             framebuffer,
@@ -90,13 +105,14 @@ impl geng::State for GameState {
 
     fn handle_event(&mut self, event: geng::Event) {
         match event {
-            geng::Event::MouseDown {
-                position,
-                button: geng::MouseButton::Left,
-            } => {
+            geng::Event::MouseDown { position, button } => {
                 let position = position.map(|x| x as f32);
                 let position = self.camera.screen_to_world(self.framebuffer_size, position);
-                self.spawn_skeleton(position);
+                match button {
+                    geng::MouseButton::Left => self.spawn_skeleton(position),
+                    geng::MouseButton::Right => self.spawn_knight(position),
+                    _ => (),
+                }
             }
             _ => (),
         }

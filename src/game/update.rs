@@ -5,6 +5,7 @@ impl GameState {
         self.update_player();
         self.update_skeletons(delta_time);
         self.update_particles(delta_time);
+        self.update_knights(delta_time);
 
         self.movement(delta_time);
     }
@@ -16,6 +17,11 @@ impl GameState {
         // Skeletons
         for skeleton in &mut self.skeletons {
             skeleton.position += skeleton.velocity * delta_time;
+        }
+
+        // Knigths
+        for knight in &mut self.knights {
+            knight.position += knight.velocity * delta_time;
         }
 
         // Particles
@@ -72,6 +78,8 @@ impl GameState {
             self.spawn_particles(position, radius, speed, color, amount);
         }
     }
+
+    fn update_knights(&mut self, delta_time: f32) {}
 
     fn update_particles(&mut self, delta_time: f32) {
         for particle in &mut self.particles {
