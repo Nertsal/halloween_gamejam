@@ -48,6 +48,12 @@ impl GameState {
             move_x += 1.0;
         }
 
+        if move_x > 0.0 {
+            self.player.sprite.flipped = false;
+        } else if move_x < 0.0 {
+            self.player.sprite.flipped = true;
+        }
+
         let move_direction = vec2(move_x, move_y).clamp(1.0);
         self.player.velocity = self.player.speed * move_direction;
     }

@@ -4,6 +4,26 @@ mod game;
 
 type Texture = Rc<ugli::Texture>;
 
+pub struct Sprite {
+    texture: Texture,
+    flipped: bool,
+}
+
+impl Sprite {
+    fn new(texture: &Texture) -> Self {
+        Self {
+            texture: texture.clone(),
+            flipped: false,
+        }
+    }
+}
+
+impl From<&Texture> for Sprite {
+    fn from(texture: &Texture) -> Self {
+        Self::new(texture)
+    }
+}
+
 #[derive(geng::Assets)]
 struct Assets {
     #[asset(path = "fonts/NF_pixels/fonts/ttf/NFPixels-Regular.ttf")]

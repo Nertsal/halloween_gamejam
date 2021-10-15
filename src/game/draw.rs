@@ -1,5 +1,29 @@
 use super::*;
 
+trait Renderable {
+    fn draw(
+        &self,
+        framebuffer: &mut ugli::Framebuffer,
+        draw_2d: &Rc<geng::Draw2D>,
+        camera: &Camera2d,
+    );
+}
+
+impl Renderable for (&Circle, &Sprite) {
+    fn draw(
+        &self,
+        framebuffer: &mut ugli::Framebuffer,
+        draw_2d: &Rc<geng::Draw2D>,
+        camera: &Camera2d,
+    ) {
+        let mut aabb = AABB::point(self.0.position).extend_uniform(self.0.radius);
+        if self.1.flipped {
+            std::mem::swap(&mut aabb.x_min, &mut aabb.x_max);
+        }
+        draw_2d.textured_quad(framebuffer, camera, aabb, &self.1.texture, Color::WHITE);
+    }
+}
+
 impl GameState {
     pub fn draw_impl(&mut self, framebuffer: &mut ugli::Framebuffer) {
         ugli::clear(framebuffer, Some(constants::BACKGROUND_COLOR), None);
@@ -21,36 +45,24 @@ impl GameState {
             );
         }
 
-        // Draw skeletons
+        let mut renderables = Vec::with_capacity(self.skeletons.len() + self.knights.len() + 1);
+
+        // Skeletons
         for skeleton in &self.skeletons {
-            self.geng.draw_2d().textured_quad(
-                framebuffer,
-                &self.camera,
-                AABB::point(skeleton.circle.position).extend_uniform(skeleton.circle.radius),
-                &skeleton.texture,
-                Color::WHITE,
-            );
+            renderables.push((&skeleton.circle, &skeleton.sprite));
         }
 
-        // Draw knights
+        // Knights
         for knight in &self.knights {
-            self.geng.draw_2d().textured_quad(
-                framebuffer,
-                &self.camera,
-                AABB::point(knight.circle.position).extend_uniform(knight.circle.radius),
-                &knight.texture,
-                Color::WHITE,
-            );
+            renderables.push((&knight.circle, &knight.sprite));
         }
 
-        // Draw player
-        self.geng.draw_2d().textured_quad(
-            framebuffer,
-            &self.camera,
-            AABB::point(self.player.circle.position).extend_uniform(self.player.circle.radius),
-            &self.player.texture,
-            Color::WHITE,
-        );
+        // Player
+        renderables.push((&self.player.circle, &self.player.sprite));
+
+        for renderable in renderables {
+            renderable.draw(framebuffer, self.geng.draw_2d(), &self.camera);
+        }
     }
 
     fn draw_ui(&self, framebuffer: &mut ugli::Framebuffer) {

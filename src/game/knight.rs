@@ -4,7 +4,7 @@ pub struct Knight {
     pub circle: Circle,
     pub speed: f32,
     pub velocity: Vec2<f32>,
-    pub texture: Texture,
+    pub sprite: Sprite,
 }
 
 impl Knight {
@@ -13,7 +13,7 @@ impl Knight {
             circle,
             speed,
             velocity: Vec2::ZERO,
-            texture: texture.clone(),
+            sprite: texture.into(),
         }
     }
 }
