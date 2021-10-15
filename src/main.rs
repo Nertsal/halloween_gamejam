@@ -9,11 +9,13 @@ pub struct Assets {
 
 #[derive(geng::Assets)]
 struct Sprites {
-    rocket: ugli::Texture,
+    skeleton: ugli::Texture,
 }
 
 impl Sprites {
-    fn init(&mut self) {}
+    fn init(&mut self) {
+        self.skeleton.set_filter(ugli::Filter::Nearest);
+    }
 }
 
 fn main() {
