@@ -57,6 +57,8 @@ struct Sprites {
     necromancer: Texture,
     knight: Texture,
     castle: Texture,
+    #[asset(path = "grave/*.png", range = "1..=3")]
+    graves: Vec<Texture>,
 }
 
 macro_rules! sprites_init {
@@ -70,6 +72,11 @@ macro_rules! sprites_init {
 impl Sprites {
     fn init(&mut self) {
         sprites_init!(self.skeleton, self.necromancer, self.knight, self.castle);
+        for grave in &mut self.graves {
+            Rc::get_mut(grave)
+                .unwrap()
+                .set_filter(ugli::Filter::Nearest);
+        }
     }
 }
 

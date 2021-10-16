@@ -2,7 +2,6 @@ use geng::Camera2d;
 
 use super::*;
 
-mod castle;
 mod constants;
 mod draw;
 mod health;
@@ -11,29 +10,35 @@ mod particle;
 mod physics;
 mod player;
 mod skeleton;
+mod textured_circle;
 mod update;
 mod velocity;
 
-use castle::*;
 use health::*;
 use knight::*;
 use particle::*;
 use physics::*;
 use player::*;
 use skeleton::*;
+use textured_circle::*;
 use velocity::*;
 
 pub(crate) struct GameState {
+    // Engine stuff
     geng: Geng,
     assets: Rc<Assets>,
     camera: Camera2d,
     framebuffer_size: Vec2<f32>,
 
+    // Gameplay
     player: Player,
-    castle: Castle,
     skeletons: Vec<Skeleton>,
     knights: Vec<Knight>,
     particles: Vec<Particle>,
+
+    // Cosmetic
+    castle: TexturedCircle,
+    graves: Vec<TexturedCircle>,
 }
 
 impl GameState {
@@ -54,16 +59,35 @@ impl GameState {
                 Health::new(constants::PLAYER_HEALTH),
                 &assets.sprites.necromancer,
             ),
-            castle: Castle::new(
+            skeletons: vec![],
+            knights: vec![],
+            particles: vec![],
+
+            castle: TexturedCircle::new(
                 Circle::new(
                     vec2(0.0, 47.5 - constants::CASTLE_SIZE),
                     constants::CASTLE_SIZE,
                 ),
                 &assets.sprites.castle,
             ),
-            skeletons: vec![],
-            knights: vec![],
-            particles: vec![],
+            graves: {
+                let mut graves = Vec::with_capacity(8);
+                let mut rng = global_rng();
+                for x in 0..2 {
+                    for y in 0..3 {
+                        let position = vec2((x * 2 - 1) as f32 * 20.0, 0.0 - y as f32 * 15.0);
+                        let offset = vec2(rng.gen_range(-2.0..2.0), rng.gen_range(-2.0..2.0));
+                        let position = position + offset;
+                        let texture = assets.sprites.graves.choose(&mut rng).unwrap();
+                        let grave = TexturedCircle::new(
+                            Circle::new(position, constants::GRAVE_SIZE),
+                            texture,
+                        );
+                        graves.push(grave);
+                    }
+                }
+                graves
+            },
         }
     }
 }
@@ -84,7 +108,7 @@ impl geng::State for GameState {
                 let position = self.camera.screen_to_world(self.framebuffer_size, position);
                 match button {
                     geng::MouseButton::Left => self.spawn_skeleton(position),
-                    geng::MouseButton::Right => self.spawn_knight(self.castle.spawn_position()),
+                    geng::MouseButton::Right => self.spawn_knight(self.castle.bottom()),
                     _ => (),
                 }
             }

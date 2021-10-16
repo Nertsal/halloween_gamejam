@@ -81,6 +81,11 @@ impl GameState {
         // Castle
         sprites.push((&self.castle.circle, &self.castle.sprite));
 
+        // Graves
+        for grave in &self.graves {
+            sprites.push((&grave.circle, &grave.sprite));
+        }
+
         // Skeletons
         for skeleton in &self.skeletons {
             sprites.push((&skeleton.circle, &skeleton.sprite));
