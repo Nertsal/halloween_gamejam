@@ -2,6 +2,30 @@ use super::*;
 
 impl GameState {
     pub fn update_impl(&mut self, delta_time: f32) {
+        self.difficulty.update(delta_time);
+
+        if let Some((spawn_timer, spawns_left)) = &mut self.spawn_timer {
+            let mut spawn_knight = false;
+            *spawn_timer -= delta_time;
+            if *spawn_timer <= 0.0 {
+                *spawn_timer = constants::SPAWN_DELAY;
+                spawn_knight = true;
+                *spawns_left -= 1;
+                if *spawns_left == 0 {
+                    self.spawn_timer = None;
+                }
+            }
+            if spawn_knight {
+                self.spawn_knight(self.castle.bottom());
+            }
+        } else {
+            if self.knights.len() == 0 {
+                self.difficulty.next_stage();
+                self.spawn_timer =
+                    Some((constants::FIRST_SPAWN_DELAY, self.difficulty.spawn_count()))
+            }
+        }
+
         self.update_player();
         self.update_skeletons(delta_time);
         self.update_particles(delta_time);

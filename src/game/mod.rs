@@ -5,6 +5,7 @@ use crate::spell_book::SpellBook;
 use super::*;
 
 mod command;
+mod difficulty;
 mod draw;
 mod health;
 mod knight;
@@ -19,6 +20,7 @@ mod velocity;
 pub use command::*;
 pub use skeleton::SkeletonType;
 
+use difficulty::*;
 use health::*;
 use knight::*;
 use particle::*;
@@ -36,6 +38,8 @@ pub(crate) struct GameState {
     framebuffer_size: Vec2<f32>,
 
     // Gameplay
+    difficulty: Difficulty,
+    spawn_timer: Option<(f32, usize)>,
     player: Player,
     skeletons: Vec<Skeleton>,
     knights: Vec<Knight>,
@@ -62,6 +66,8 @@ impl GameState {
             },
             framebuffer_size: vec2(1.0, 1.0),
 
+            difficulty: Difficulty::new(),
+            spawn_timer: None,
             player: Player::new(
                 Circle::new(Vec2::ZERO, constants::PLAYER_RADIUS),
                 constants::PLAYER_SPEED,

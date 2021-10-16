@@ -7,6 +7,9 @@ pub const BACKGROUND_COLOR: Color<f32> = Color {
     a: 1.0,
 };
 
+pub const FIRST_SPAWN_DELAY: f32 = 3.0;
+pub const SPAWN_DELAY: f32 = 1.0;
+
 pub const PLAYER_SPEED: f32 = 10.0;
 pub const PLAYER_RADIUS: f32 = 2.5;
 pub const PLAYER_HEALTH: f32 = 100.0;
