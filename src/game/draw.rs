@@ -1,6 +1,6 @@
 use geng::draw_2d::TexturedVertex;
 
-use crate::{renderable::Renderable, segment::Segment};
+use crate::renderable::Renderable;
 
 use super::*;
 

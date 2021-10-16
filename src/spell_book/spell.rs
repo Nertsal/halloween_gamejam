@@ -71,7 +71,7 @@ impl Spell {
         con1 == con2
     }
 
-    fn connections(&self) -> Vec<(usize, usize)> {
+    fn connections(&self) -> Vec<Connection<usize>> {
         vec_to_connections(&self.key_points)
     }
 }
@@ -93,7 +93,7 @@ impl SpellCast {
         self.initial_mouse_pos
     }
 
-    pub fn connections(&self) -> Vec<(usize, usize)> {
+    pub fn connections(&self) -> Vec<Connection<usize>> {
         vec_to_connections(&self.key_points)
     }
 
@@ -106,7 +106,21 @@ impl SpellCast {
     }
 }
 
-fn vec_to_connections<T: Copy>(vec: &Vec<T>) -> Vec<(T, T)> {
+#[derive(PartialOrd, Ord)]
+pub struct Connection<T> {
+    pub from: T,
+    pub to: T,
+}
+
+impl<T: PartialEq> PartialEq for Connection<T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.from == other.from && self.to == other.to
+            || self.from == other.to && self.to == other.from
+    }
+}
+impl<T: Eq> Eq for Connection<T> {}
+
+fn vec_to_connections<T: Copy>(vec: &Vec<T>) -> Vec<Connection<T>> {
     let len = vec.len();
     if len == 0 {
         return vec![];
@@ -116,7 +130,7 @@ fn vec_to_connections<T: Copy>(vec: &Vec<T>) -> Vec<(T, T)> {
     for i in 0..len - 1 {
         let from = vec[i];
         let to = vec[i + 1];
-        connections.push((from, to));
+        connections.push(Connection { from, to });
     }
     connections
 }

@@ -139,9 +139,9 @@ impl SpellBook {
                 );
             }
 
-            for (from, to) in spell_cast.connections() {
-                let start = self.spell_grid[from] + offset;
-                let end = self.spell_grid[to] + offset;
+            for connection in spell_cast.connections() {
+                let start = self.spell_grid[connection.from] + offset;
+                let end = self.spell_grid[connection.to] + offset;
                 self.geng.draw_2d().draw(
                     framebuffer,
                     &self.camera,
