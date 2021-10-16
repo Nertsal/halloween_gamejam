@@ -58,6 +58,7 @@ impl GameState {
                             Circle::new(self.player.circle.position, constants::FIREBALL_RADIUS),
                             direction * constants::FIREBALL_SPEED,
                             &self.assets.sprites.fireball,
+                            ProjectileType::Fireball,
                         );
                         self.projectiles.push(fireball);
                     }

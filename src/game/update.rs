@@ -74,8 +74,8 @@ impl GameState {
                 knight.circle.position += collision.normal * collision.penetration;
                 knight.velocity.current += collision.normal * constants::PLAYER_HIT_FORCE;
 
-                player.health.change(-constants::KNIGHT_HIT_STRENGTH);
-                knight.health.change(-constants::PLAYER_HIT_STRENGTH);
+                player.health.change(-constants::KNIGHT_HIT_DAMAGE);
+                knight.health.change(-constants::PLAYER_HIT_DAMAGE);
             }
         }
 
@@ -91,8 +91,8 @@ impl GameState {
                     knight.velocity.current -=
                         collision.normal * constants::SKELETON_WARRIOR_HIT_FORCE;
 
-                    skeleton.health.change(-constants::KNIGHT_HIT_STRENGTH);
-                    knight.health.change(-constants::SKELETON_HIT_STRENGTH);
+                    skeleton.health.change(-constants::KNIGHT_HIT_DAMAGE);
+                    knight.health.change(-constants::SKELETON_HIT_DAMAGE);
                 }
             }
             for skeleton in &mut self.skeletons_archers {
@@ -103,8 +103,8 @@ impl GameState {
 
                     skeleton.velocity.current += collision.normal * constants::KNIGHT_HIT_FORCE;
 
-                    skeleton.health.change(-constants::KNIGHT_HIT_STRENGTH);
-                    knight.health.change(-constants::SKELETON_HIT_STRENGTH);
+                    skeleton.health.change(-constants::KNIGHT_HIT_DAMAGE);
+                    knight.health.change(-constants::SKELETON_HIT_DAMAGE);
                 }
             }
             for projectile in &mut self.projectiles {
@@ -112,7 +112,10 @@ impl GameState {
                     knight.velocity.current -= collision.normal * constants::ARROW_HIT_FORCE;
 
                     projectile.hit = true;
-                    knight.health.change(-constants::ARROW_HIT_STRENGTH);
+                    knight.health.change(-match projectile.typ {
+                        ProjectileType::Arrow => constants::ARROW_HIT_DAMAGE,
+                        ProjectileType::Fireball => constants::FIREBALL_HIT_DAMAGE,
+                    });
                 }
             }
         }
@@ -130,6 +133,28 @@ impl GameState {
     }
 
     fn kill(&mut self) {
+        let mut particles = Vec::new();
+        let knights = &mut self.knights;
+        self.projectiles.retain(|projectile| {
+            let hit = projectile.hit;
+            if hit {
+                for knight in knights.iter_mut() {
+                    let distance = (knight.circle.position - projectile.circle.position).len();
+                    if distance <= constants::FIREBALL_EXPLOSION_RADIUS {
+                        knight.health.change(-constants::FIREBALL_EXPLOSION_DAMAGE);
+                    }
+                }
+                particles.push((
+                    projectile.circle.position,
+                    0.25,
+                    10.0,
+                    Color::rgba(0.7, 0.1, 0.1, constants::PARTICLE_ALPHA),
+                    50,
+                ));
+            }
+            !hit
+        });
+
         let player = &mut self.player;
         self.knights.retain(|knight| {
             let alive = knight.health.is_alive();
@@ -138,11 +163,15 @@ impl GameState {
             }
             alive
         });
+
         self.skeletons_warriors
             .retain(|skeleton| skeleton.health.is_alive());
         self.skeletons_archers
             .retain(|skeleton| skeleton.health.is_alive());
-        self.projectiles.retain(|projectile| !projectile.hit);
+
+        for (position, radius, speed, color, amount) in particles {
+            self.spawn_particles(position, radius, speed, color, amount);
+        }
     }
 
     fn update_player(&mut self) {
@@ -268,6 +297,7 @@ impl GameState {
                 Circle::new(position, constants::ARROW_RADIUS),
                 direction * constants::ARROW_SPEED,
                 &self.assets.sprites.arrow,
+                ProjectileType::Arrow,
             ));
         }
 

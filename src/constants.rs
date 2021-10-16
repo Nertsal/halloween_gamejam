@@ -25,7 +25,7 @@ pub const PLAYER_SPEED: f32 = 10.0;
 pub const PLAYER_RADIUS: f32 = 2.5;
 pub const PLAYER_HEALTH: f32 = 100.0;
 pub const PLAYER_MANA: f32 = 100.0;
-pub const PLAYER_HIT_STRENGTH: f32 = 20.0;
+pub const PLAYER_HIT_DAMAGE: f32 = 20.0;
 pub const PLAYER_HIT_FORCE: f32 = 25.0;
 
 pub const SPELL_WARRIOR_COST: f32 = 10.0;
@@ -34,10 +34,13 @@ pub const SPELL_FIREBALL_COST: f32 = 50.0;
 
 pub const FIREBALL_SPEED: f32 = 40.0;
 pub const FIREBALL_RADIUS: f32 = 2.0;
+pub const FIREBALL_HIT_DAMAGE: f32 = 30.0;
+pub const FIREBALL_EXPLOSION_RADIUS: f32 = 15.0;
+pub const FIREBALL_EXPLOSION_DAMAGE: f32 = 20.0;
 
 pub const SKELETON_RADIUS: f32 = 2.5;
 pub const SKELETON_SPAWN_TIME: f32 = 0.5;
-pub const SKELETON_HIT_STRENGTH: f32 = 10.0;
+pub const SKELETON_HIT_DAMAGE: f32 = 10.0;
 pub const SKELETON_ACCELERATION: f32 = 10.0;
 
 pub const SKELETON_WARRIOR_SPEED: f32 = 12.5;
@@ -52,13 +55,13 @@ pub const SKELETON_ARCHER_RANDOMNESS: f32 = 2.0;
 
 pub const ARROW_SPEED: f32 = 20.0;
 pub const ARROW_RADIUS: f32 = 1.0;
-pub const ARROW_HIT_STRENGTH: f32 = 10.0;
+pub const ARROW_HIT_DAMAGE: f32 = 10.0;
 pub const ARROW_HIT_FORCE: f32 = 10.0;
 
 pub const KNIGHT_SPEED: f32 = 7.5;
 pub const KNIGHT_RADIUS: f32 = 2.5;
 pub const KNIGHT_HEALTH: f32 = 30.0;
-pub const KNIGHT_HIT_STRENGTH: f32 = 10.0;
+pub const KNIGHT_HIT_DAMAGE: f32 = 10.0;
 pub const KNIGHT_HIT_FORCE: f32 = 5.0;
 pub const KNIGHT_ACCELERATION: f32 = 10.0;
 
