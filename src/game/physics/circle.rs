@@ -27,4 +27,15 @@ impl Circle {
             None
         }
     }
+
+    pub fn bounds(&mut self, border: &AABB<f32>) {
+        self.position.x = self
+            .position
+            .x
+            .clamp(border.x_min + self.radius, border.x_max - self.radius);
+        self.position.y = self
+            .position
+            .y
+            .clamp(border.y_min + self.radius, border.y_max - self.radius);
+    }
 }

@@ -58,6 +58,36 @@ impl GameState {
     }
 
     fn draw_game(&self, framebuffer: &mut ugli::Framebuffer) {
+        // Border
+        let center = self.bounds.center();
+        let horizontal = AABB::ZERO.extend_symmetric(vec2(self.bounds.width(), 1.0) / 2.0);
+        self.geng.draw_2d().quad(
+            framebuffer,
+            &self.camera,
+            horizontal.translate(vec2(center.x, self.bounds.y_max)),
+            constants::BOUNDS_COLOR,
+        );
+        self.geng.draw_2d().quad(
+            framebuffer,
+            &self.camera,
+            horizontal.translate(vec2(center.x, self.bounds.y_min)),
+            constants::BOUNDS_COLOR,
+        );
+
+        let vertical = AABB::ZERO.extend_symmetric(vec2(1.0, self.bounds.height()) / 2.0);
+        self.geng.draw_2d().quad(
+            framebuffer,
+            &self.camera,
+            vertical.translate(vec2(self.bounds.x_max, center.y)),
+            constants::BOUNDS_COLOR,
+        );
+        self.geng.draw_2d().quad(
+            framebuffer,
+            &self.camera,
+            vertical.translate(vec2(self.bounds.x_min, center.y)),
+            constants::BOUNDS_COLOR,
+        );
+
         // Draw particles
         for particle in &self.particles {
             self.geng.draw_2d().circle(

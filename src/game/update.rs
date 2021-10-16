@@ -116,6 +116,17 @@ impl GameState {
                 }
             }
         }
+
+        // Player - Border
+        self.player.circle.bounds(&self.bounds);
+
+        // Skeletons - Border
+        for skeleton in &mut self.skeletons_warriors {
+            skeleton.circle.bounds(&self.bounds);
+        }
+        for skeleton in &mut self.skeletons_archers {
+            skeleton.circle.bounds(&self.bounds);
+        }
     }
 
     fn kill(&mut self) {

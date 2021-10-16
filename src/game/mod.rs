@@ -40,6 +40,7 @@ pub(crate) struct GameState {
     framebuffer_size: Vec2<f32>,
 
     // Gameplay
+    bounds: AABB<f32>,
     difficulty: Difficulty,
     spawn_timer: Option<(f32, usize)>,
     player: Player,
@@ -70,6 +71,8 @@ impl GameState {
             },
             framebuffer_size: vec2(1.0, 1.0),
 
+            bounds: AABB::point(vec2(constants::ARENA_CENTER_X, constants::ARENA_CENTER_Y))
+                .extend_symmetric(vec2(constants::ARENA_WIDTH, constants::ARENA_HEIGHT) / 2.0),
             difficulty: Difficulty::new(),
             spawn_timer: None,
             player: Player::new(

@@ -6,6 +6,17 @@ pub const BACKGROUND_COLOR: Color<f32> = Color {
     b: 0.2,
     a: 1.0,
 };
+pub const BOUNDS_COLOR: Color<f32> = Color {
+    r: 0.5,
+    g: 0.5,
+    b: 0.5,
+    a: 0.7,
+};
+
+pub const ARENA_CENTER_X: f32 = 0.0;
+pub const ARENA_CENTER_Y: f32 = -12.0;
+pub const ARENA_WIDTH: f32 = 100.0;
+pub const ARENA_HEIGHT: f32 = 70.0;
 
 pub const FIRST_SPAWN_DELAY: f32 = 3.0;
 pub const SPAWN_DELAY: f32 = 1.0;
