@@ -40,6 +40,11 @@ impl SkeletonWarrior {
             health,
         }
     }
+
+    pub fn target(&mut self, target_pos: Vec2<f32>) {
+        let direction = target_pos - self.circle.position;
+        self.velocity.target = direction.clamp(self.speed);
+    }
 }
 
 pub struct SkeletonArcher {
@@ -70,6 +75,11 @@ impl SkeletonArcher {
             },
             health,
         }
+    }
+
+    pub fn target(&mut self, target_pos: Vec2<f32>) {
+        let direction = target_pos - self.circle.position;
+        self.velocity.target = direction.clamp(self.speed);
     }
 }
 

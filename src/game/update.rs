@@ -164,6 +164,15 @@ impl GameState {
                     }
                 }
                 SkeletonState::Alive => {
+                    // Find the target
+                    let targets = self.knights.iter().map(|knight| knight.circle.position);
+                    let targets = targets
+                        .map(|position| (position, (position - skeleton.circle.position).len()));
+                    let (target, _) = targets
+                        .min_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
+                        .unwrap_or((skeleton.circle.position, 0.0));
+                    skeleton.target(target);
+
                     skeleton.velocity.accelerate(delta_time);
                 }
             }
@@ -184,6 +193,22 @@ impl GameState {
                     }
                 }
                 SkeletonState::Alive => {
+                    // Find the target
+                    let targets = self.knights.iter().map(|knight| knight.circle.position);
+                    let targets = targets
+                        .map(|position| (position, (position - skeleton.circle.position).len()));
+                    let (target, distance) = targets
+                        .min_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
+                        .unwrap_or((skeleton.circle.position, 0.0));
+                    let target = if distance <= 1e-5 {
+                        skeleton.circle.position
+                    } else {
+                        (skeleton.circle.position - target) / distance
+                            * constants::SKELETON_ARCHER_DISTANCE
+                            + target
+                    };
+                    skeleton.target(target);
+
                     skeleton.velocity.accelerate(delta_time);
                 }
             }
