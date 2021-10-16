@@ -19,7 +19,8 @@ impl GameState {
             Command::Spawn { spawn } => match spawn {
                 CommandSpawn::Skeleton { skeleton_type } => {
                     let grave = self.graves.choose(&mut rng).unwrap();
-                    self.spawn_skeleton(grave.bottom(), skeleton_type)
+                    let position = grave.bottom();
+                    self.spawn_skeleton(position, skeleton_type)
                 }
                 CommandSpawn::Knight => self.spawn_knight(self.castle.bottom()),
             },
