@@ -162,6 +162,7 @@ impl GameState {
 
     fn update_skeletons(&mut self, delta_time: f32) {
         let mut particles = Vec::new();
+        let mut rng = global_rng();
 
         for skeleton in &mut self.skeletons_warriors {
             match &mut skeleton.state {
@@ -232,6 +233,10 @@ impl GameState {
                             let prediction =
                                 target.circle.position + target.velocity.current * time;
                             let direction = (prediction - skeleton.circle.position).normalize();
+                            direction.rotate(rng.gen_range(
+                                -constants::SKELETON_ARCHER_RANDOMNESS
+                                    ..constants::SKELETON_ARCHER_RANDOMNESS,
+                            ));
                             projectiles.push((skeleton.circle.position, direction));
                             skeleton.shoot_timer = skeleton.shoot_cooldown;
                         }
