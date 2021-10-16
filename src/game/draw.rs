@@ -45,9 +45,10 @@ impl Renderable for (&Circle, &Health) {
             .extend_symmetric(vec2(bar_width / 2.0, 0.0));
         draw_2d.quad(framebuffer, camera, bar_aabb, Color::rgb(0.0, 0.3, 0.0));
         let offset = bar_height * 0.2;
-        let health_aabb = bar_aabb
-            .extend_uniform(-offset)
-            .extend_positive(vec2((health.fraction() - 1.0) * (bar_width - offset), 0.0));
+        let health_aabb = bar_aabb.extend_uniform(-offset).extend_positive(vec2(
+            (health.fraction() - 1.0) * (bar_width - 2.0 * offset),
+            0.0,
+        ));
         draw_2d.quad(framebuffer, camera, health_aabb, Color::rgb(0.0, 0.7, 0.0));
     }
 }
@@ -86,7 +87,7 @@ impl GameState {
         // Knights
         for knight in &self.knights {
             sprites.push((&knight.circle, &knight.sprite));
-            // healths.push((&knight.circle, &knight.health));
+            healths.push((&knight.circle, &knight.health));
         }
 
         // Player
