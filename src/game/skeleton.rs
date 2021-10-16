@@ -9,6 +9,11 @@ pub struct Skeleton {
     pub health: Health,
 }
 
+pub enum SkeletonType {
+    Warrior,
+    Archer,
+}
+
 pub enum SkeletonState {
     Spawning { time_left: f32 },
     Alive,

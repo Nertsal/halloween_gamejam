@@ -1,8 +1,10 @@
 use geng::Camera2d;
 
+use crate::spell_book::SpellBook;
+
 use super::*;
 
-mod constants;
+mod command;
 mod draw;
 mod health;
 mod knight;
@@ -13,6 +15,9 @@ mod skeleton;
 mod textured_circle;
 mod update;
 mod velocity;
+
+pub use command::*;
+pub use skeleton::SkeletonType;
 
 use health::*;
 use knight::*;
@@ -39,6 +44,10 @@ pub(crate) struct GameState {
     // Cosmetic
     castle: TexturedCircle,
     graves: Vec<TexturedCircle>,
+
+    // SpellBook
+    is_spell_book_open: bool,
+    spell_book: SpellBook,
 }
 
 impl GameState {
@@ -88,6 +97,9 @@ impl GameState {
                 }
                 graves
             },
+
+            is_spell_book_open: true,
+            spell_book: SpellBook::new(geng),
         }
     }
 }
@@ -95,10 +107,14 @@ impl GameState {
 impl geng::State for GameState {
     fn draw(&mut self, framebuffer: &mut ugli::Framebuffer) {
         self.draw_impl(framebuffer);
+        if self.is_spell_book_open {
+            self.spell_book.draw(framebuffer);
+        }
     }
 
     fn update(&mut self, delta_time: f64) {
         self.update_impl(delta_time as f32);
+        self.spell_book.update(delta_time);
     }
 
     fn handle_event(&mut self, event: geng::Event) {
@@ -114,5 +130,6 @@ impl geng::State for GameState {
             }
             _ => (),
         }
+        self.spell_book.handle_event(event);
     }
 }

@@ -1,13 +1,6 @@
-use super::*;
+use crate::renderable::Renderable;
 
-trait Renderable {
-    fn draw(
-        &self,
-        framebuffer: &mut ugli::Framebuffer,
-        draw_2d: &Rc<geng::Draw2D>,
-        camera: &Camera2d,
-    );
-}
+use super::*;
 
 impl Renderable for (&Circle, &Sprite) {
     fn draw(

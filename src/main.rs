@@ -1,6 +1,9 @@
 use geng::prelude::*;
 
 mod game;
+mod constants;
+mod renderable;
+mod spell_book;
 
 type Texture = Rc<ugli::Texture>;
 
