@@ -119,17 +119,14 @@ impl geng::State for GameState {
 
     fn handle_event(&mut self, event: geng::Event) {
         match event {
-            geng::Event::MouseDown { position, button } => {
-                let position = position.map(|x| x as f32);
-                let position = self.camera.screen_to_world(self.framebuffer_size, position);
-                match button {
-                    geng::MouseButton::Left => self.spawn_skeleton(position),
-                    geng::MouseButton::Right => self.spawn_knight(self.castle.bottom()),
-                    _ => (),
-                }
-            }
+            geng::Event::MouseDown { button, .. } => match button {
+                geng::MouseButton::Right => self.spawn_knight(self.castle.bottom()),
+                _ => (),
+            },
             _ => (),
         }
-        self.spell_book.handle_event(event);
+        if let Some(command) = self.spell_book.handle_event(event) {
+            self.perform_command(command);
+        }
     }
 }

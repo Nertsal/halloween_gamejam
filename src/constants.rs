@@ -33,6 +33,7 @@ pub const PARTICLE_DECAY_SPEED: f32 = 0.5;
 pub const CASTLE_SIZE: f32 = 12.0;
 pub const GRAVE_SIZE: f32 = 2.0;
 
+pub const SPELL_RING_RADIUS: f32 = 10.0;
 pub const SPELLS_MARGIN: f32 = 10.0;
-pub const SPELL_POINT_RADIUS: f32 = 0.5;
-pub const SPELL_CONNECTION_WIDTH: f32 = 0.2;
+pub const SPELL_POINT_RADIUS: f32 = 2.0;
+pub const SPELL_CONNECTION_WIDTH: f32 = 0.5;

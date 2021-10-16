@@ -7,8 +7,10 @@ pub struct Skeleton {
     pub sprite: Sprite,
     pub state: SkeletonState,
     pub health: Health,
+    pub typ: SkeletonType,
 }
 
+#[derive(Copy, Clone)]
 pub enum SkeletonType {
     Warrior,
     Archer,
@@ -26,6 +28,7 @@ impl Skeleton {
         spawn_time: f32,
         health: Health,
         acceleration: f32,
+        typ: SkeletonType,
         texture: &Texture,
     ) -> Self {
         Self {
@@ -37,18 +40,20 @@ impl Skeleton {
                 time_left: spawn_time,
             },
             health,
+            typ,
         }
     }
 }
 
 impl GameState {
-    pub fn spawn_skeleton(&mut self, position: Vec2<f32>) {
+    pub fn spawn_skeleton(&mut self, position: Vec2<f32>, typ: SkeletonType) {
         let skeleton = Skeleton::new(
             Circle::new(position, constants::SKELETON_RADIUS),
             constants::SKELETON_SPEED,
             constants::SKELETON_SPAWN_TIME,
             Health::new(constants::SKELETON_HEALTH),
             constants::SKELETON_ACCELERATION,
+            typ,
             &self.assets.sprites.skeleton,
         );
         self.skeletons.push(skeleton);
