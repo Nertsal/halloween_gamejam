@@ -66,8 +66,10 @@ impl GameState {
                 knight.circle.position += collision.normal * collision.penetration;
                 knight.velocity.current += collision.normal * constants::PLAYER_HIT_FORCE;
 
-                knight.health.change(-constants::PLAYER_HIT_STRENGTH);
                 player.health.change(-constants::KNIGHT_HIT_STRENGTH);
+                if knight.health.change(-constants::PLAYER_HIT_STRENGTH) {
+                    player.mana.change(constants::KNIGHT_KILL_MANA);
+                }
             }
         }
 
@@ -81,8 +83,10 @@ impl GameState {
 
                     skeleton.velocity.current += collision.normal * constants::KNIGHT_HIT_FORCE;
 
-                    knight.health.change(-constants::SKELETON_HIT_STRENGTH);
                     skeleton.health.change(-constants::KNIGHT_HIT_STRENGTH);
+                    if knight.health.change(-constants::SKELETON_HIT_STRENGTH) {
+                        self.player.mana.change(constants::KNIGHT_KILL_MANA);
+                    }
                 }
             }
         }
