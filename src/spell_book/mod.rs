@@ -33,12 +33,14 @@ impl SpellBook {
                     },
                 },
                 &[
-                    vec2(0.0, -5.0),
-                    vec2(0.0, 5.0),
-                    vec2(3.0, 0.0),
-                    vec2(0.0, -5.0),
-                    //vec2(-2.0, 0.0),
-                    //vec2(5.0, 0.0),
+                    vec2(10.0, 0.0),
+                    vec2(-3.0, 0.0),
+                    vec2(0.0, -10.0),
+                    vec2(4.0, -5.0),
+                    vec2(6.0, 0.0),
+                    vec2(4.0, 5.0),
+                    vec2(0.0, 10.0),
+                    vec2(-3.0, 0.0),
                 ],
             )],
         }
@@ -81,12 +83,12 @@ impl geng::State for SpellBook {
                 self.geng.draw_2d().draw(
                     framebuffer,
                     &self.camera,
-                    dbg!(&Segment {
+                    &Segment {
                         start,
                         end,
                         width: constants::SPELL_CONNECTION_WIDTH,
                     }
-                    .polygon()),
+                    .polygon(),
                     Color::WHITE,
                     ugli::DrawMode::TriangleFan,
                 );
