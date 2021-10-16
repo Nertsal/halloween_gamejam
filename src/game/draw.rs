@@ -141,8 +141,8 @@ impl GameState {
         // Projectiles
         for projectile in &self.projectiles {
             let direction = projectile.velocity.normalize();
-            let forward = direction * projectile.circle.radius;
-            let sideward = direction.rotate_90();
+            let forward = direction * projectile.circle.radius * 2.0;
+            let sideward = forward.rotate_90();
             let corner = projectile.circle.position - (forward + sideward) / 2.0;
             self.geng.draw_2d().draw_textured(
                 framebuffer,

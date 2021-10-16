@@ -65,6 +65,7 @@ struct Sprites {
     #[asset(path = "grave/*.png", range = "1..=3")]
     graves: Vec<Texture>,
     arrow: Texture,
+    fireball: Texture,
 }
 
 macro_rules! sprites_init {
@@ -83,7 +84,8 @@ impl Sprites {
             self.necromancer,
             self.knight,
             self.castle,
-            self.arrow
+            self.arrow,
+            self.fireball
         );
         for grave in &mut self.graves {
             Rc::get_mut(grave)

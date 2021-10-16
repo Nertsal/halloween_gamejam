@@ -32,6 +32,9 @@ pub const SPELL_WARRIOR_COST: f32 = 10.0;
 pub const SPELL_ARCHER_COST: f32 = 20.0;
 pub const SPELL_FIREBALL_COST: f32 = 50.0;
 
+pub const FIREBALL_SPEED: f32 = 40.0;
+pub const FIREBALL_RADIUS: f32 = 2.0;
+
 pub const SKELETON_RADIUS: f32 = 2.5;
 pub const SKELETON_SPAWN_TIME: f32 = 0.5;
 pub const SKELETON_HIT_STRENGTH: f32 = 10.0;
@@ -48,7 +51,7 @@ pub const SKELETON_ARCHER_COOLDOWN: f32 = 3.0;
 pub const SKELETON_ARCHER_RANDOMNESS: f32 = 2.0;
 
 pub const ARROW_SPEED: f32 = 20.0;
-pub const ARROW_RADIUS: f32 = 2.0;
+pub const ARROW_RADIUS: f32 = 1.0;
 pub const ARROW_HIT_STRENGTH: f32 = 10.0;
 pub const ARROW_HIT_FORCE: f32 = 10.0;
 

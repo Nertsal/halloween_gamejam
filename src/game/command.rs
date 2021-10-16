@@ -8,6 +8,7 @@ pub enum Command {
 #[derive(Clone)]
 pub enum CommandSpawn {
     Skeleton { skeleton_type: SkeletonType },
+    Fireball,
 }
 
 impl GameState {
@@ -34,6 +35,32 @@ impl GameState {
                             self.spawn_skeleton_archer(position);
                         }
                     };
+                }
+                CommandSpawn::Fireball => {
+                    let target = self
+                        .knights
+                        .iter()
+                        .map(|knight| {
+                            (
+                                knight,
+                                (knight.circle.position - self.player.circle.position).len(),
+                            )
+                        })
+                        .min_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap());
+                    if let Some((target, distance)) = target {
+                        if !self.player.mana.try_change(-constants::SPELL_FIREBALL_COST) {
+                            return;
+                        }
+
+                        let direction =
+                            (target.circle.position - self.player.circle.position) / distance;
+                        let fireball = Projectile::new(
+                            Circle::new(self.player.circle.position, constants::FIREBALL_RADIUS),
+                            direction * constants::FIREBALL_SPEED,
+                            &self.assets.sprites.fireball,
+                        );
+                        self.projectiles.push(fireball);
+                    }
                 }
             },
         }
