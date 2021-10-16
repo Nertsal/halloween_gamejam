@@ -28,7 +28,13 @@ pub const SKELETON_HEALTH: f32 = 10.0;
 pub const SKELETON_HIT_STRENGTH: f32 = 10.0;
 pub const SKELETON_ACCELERATION: f32 = 10.0;
 
-pub const SKELETON_ARCHER_DISTANCE: f32 = 10.0;
+pub const SKELETON_ARCHER_DISTANCE: f32 = 25.0;
+pub const SKELETON_ARCHER_COOLDOWN: f32 = 3.0;
+
+pub const ARROW_SPEED: f32 = 15.0;
+pub const ARROW_RADIUS: f32 = 2.0;
+pub const ARROW_HIT_STRENGTH: f32 = 10.0;
+pub const ARROW_HIT_FORCE: f32 = 10.0;
 
 pub const KNIGHT_SPEED: f32 = 7.5;
 pub const KNIGHT_RADIUS: f32 = 2.5;

@@ -50,6 +50,11 @@ impl GameState {
             skeleton.circle.position += skeleton.velocity.current * delta_time;
         }
 
+        // Projectiles
+        for projectile in &mut self.projectiles {
+            projectile.circle.position += projectile.velocity * delta_time;
+        }
+
         // Knights
         for knight in &mut self.knights {
             knight.circle.position += knight.velocity.current * delta_time;
@@ -70,13 +75,11 @@ impl GameState {
                 knight.velocity.current += collision.normal * constants::PLAYER_HIT_FORCE;
 
                 player.health.change(-constants::KNIGHT_HIT_STRENGTH);
-                if knight.health.change(-constants::PLAYER_HIT_STRENGTH) {
-                    player.mana.change(constants::KNIGHT_KILL_MANA);
-                }
+                knight.health.change(-constants::PLAYER_HIT_STRENGTH);
             }
         }
 
-        // Knights - Skeletons
+        // Knights - Skeletons, Projectiles
         for knight in &mut self.knights {
             for skeleton in &mut self.skeletons_warriors {
                 if let Some(collision) = knight.circle.collision(&skeleton.circle) {
@@ -87,9 +90,7 @@ impl GameState {
                     skeleton.velocity.current += collision.normal * constants::KNIGHT_HIT_FORCE;
 
                     skeleton.health.change(-constants::KNIGHT_HIT_STRENGTH);
-                    if knight.health.change(-constants::SKELETON_HIT_STRENGTH) {
-                        self.player.mana.change(constants::KNIGHT_KILL_MANA);
-                    }
+                    knight.health.change(-constants::SKELETON_HIT_STRENGTH);
                 }
             }
             for skeleton in &mut self.skeletons_archers {
@@ -101,20 +102,34 @@ impl GameState {
                     skeleton.velocity.current += collision.normal * constants::KNIGHT_HIT_FORCE;
 
                     skeleton.health.change(-constants::KNIGHT_HIT_STRENGTH);
-                    if knight.health.change(-constants::SKELETON_HIT_STRENGTH) {
-                        self.player.mana.change(constants::KNIGHT_KILL_MANA);
-                    }
+                    knight.health.change(-constants::SKELETON_HIT_STRENGTH);
+                }
+            }
+            for projectile in &mut self.projectiles {
+                if let Some(collision) = knight.circle.collision(&projectile.circle) {
+                    knight.velocity.current -= collision.normal * constants::ARROW_HIT_FORCE;
+
+                    projectile.hit = true;
+                    knight.health.change(-constants::ARROW_HIT_STRENGTH);
                 }
             }
         }
     }
 
     fn kill(&mut self) {
-        self.knights.retain(|knight| knight.health.is_alive());
+        let player = &mut self.player;
+        self.knights.retain(|knight| {
+            let alive = knight.health.is_alive();
+            if !alive {
+                player.mana.change(constants::KNIGHT_KILL_MANA);
+            }
+            alive
+        });
         self.skeletons_warriors
             .retain(|skeleton| skeleton.health.is_alive());
         self.skeletons_archers
             .retain(|skeleton| skeleton.health.is_alive());
+        self.projectiles.retain(|projectile| !projectile.hit);
     }
 
     fn update_player(&mut self) {
@@ -177,6 +192,8 @@ impl GameState {
                 }
             }
         }
+
+        let mut projectiles = Vec::new();
         for skeleton in &mut self.skeletons_archers {
             match &mut skeleton.state {
                 SkeletonState::Spawning { time_left } => {
@@ -194,6 +211,10 @@ impl GameState {
                 }
                 SkeletonState::Alive => {
                     // Find the target
+                    if skeleton.shoot_timer > 0.0 {
+                        skeleton.shoot_timer -= delta_time;
+                    }
+
                     let targets = self.knights.iter().map(|knight| knight.circle.position);
                     let targets = targets
                         .map(|position| (position, (position - skeleton.circle.position).len()));
@@ -203,15 +224,26 @@ impl GameState {
                     let target = if distance <= 1e-5 {
                         skeleton.circle.position
                     } else {
-                        (skeleton.circle.position - target) / distance
-                            * constants::SKELETON_ARCHER_DISTANCE
-                            + target
+                        let direction = (skeleton.circle.position - target) / distance;
+                        if skeleton.shoot_timer <= 0.0 {
+                            projectiles.push((skeleton.circle.position, -direction));
+                            skeleton.shoot_timer = skeleton.shoot_cooldown;
+                        }
+
+                        direction * constants::SKELETON_ARCHER_DISTANCE + target
                     };
                     skeleton.target(target);
-
                     skeleton.velocity.accelerate(delta_time);
                 }
             }
+        }
+
+        for (position, direction) in projectiles {
+            self.projectiles.push(Projectile::new(
+                Circle::new(position, constants::ARROW_RADIUS),
+                direction * constants::ARROW_SPEED,
+                &self.assets.sprites.arrow,
+            ));
         }
 
         for (position, radius, speed, color, amount) in particles {

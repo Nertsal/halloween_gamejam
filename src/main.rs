@@ -1,8 +1,9 @@
 use geng::prelude::*;
 
-mod game;
 mod constants;
+mod game;
 mod renderable;
+mod segment;
 mod spell_book;
 
 type Texture = Rc<ugli::Texture>;
@@ -62,6 +63,7 @@ struct Sprites {
     castle: Texture,
     #[asset(path = "grave/*.png", range = "1..=3")]
     graves: Vec<Texture>,
+    arrow: Texture,
 }
 
 macro_rules! sprites_init {
@@ -74,7 +76,13 @@ macro_rules! sprites_init {
 
 impl Sprites {
     fn init(&mut self) {
-        sprites_init!(self.skeleton, self.necromancer, self.knight, self.castle);
+        sprites_init!(
+            self.skeleton,
+            self.necromancer,
+            self.knight,
+            self.castle,
+            self.arrow
+        );
         for grave in &mut self.graves {
             Rc::get_mut(grave)
                 .unwrap()

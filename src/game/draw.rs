@@ -1,4 +1,6 @@
-use crate::renderable::Renderable;
+use geng::draw_2d::TexturedVertex;
+
+use crate::{renderable::Renderable, segment::Segment};
 
 use super::*;
 
@@ -104,6 +106,43 @@ impl GameState {
         }
         for renderable in healths {
             renderable.draw(framebuffer, self.geng.draw_2d(), &self.camera);
+        }
+
+        // Projectiles
+        for projectile in &self.projectiles {
+            let direction = projectile.velocity.normalize();
+            let forward = direction * projectile.circle.radius;
+            let sideward = direction.rotate_90();
+            let corner = projectile.circle.position - (forward + sideward) / 2.0;
+            self.geng.draw_2d().draw_textured(
+                framebuffer,
+                &self.camera,
+                &[
+                    TexturedVertex {
+                        a_pos: corner,
+                        a_color: Color::WHITE,
+                        a_vt: vec2(0.0, 0.0),
+                    },
+                    TexturedVertex {
+                        a_pos: corner + forward,
+                        a_color: Color::WHITE,
+                        a_vt: vec2(1.0, 0.0),
+                    },
+                    TexturedVertex {
+                        a_pos: corner + forward + sideward,
+                        a_color: Color::WHITE,
+                        a_vt: vec2(1.0, 1.0),
+                    },
+                    TexturedVertex {
+                        a_pos: corner + sideward,
+                        a_color: Color::WHITE,
+                        a_vt: vec2(0.0, 1.0),
+                    },
+                ],
+                &projectile.texture,
+                Color::WHITE,
+                ugli::DrawMode::TriangleFan,
+            );
         }
     }
 

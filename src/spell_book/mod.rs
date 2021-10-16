@@ -1,13 +1,11 @@
 use geng::Camera2d;
 
-use crate::game::*;
+use crate::{game::*, segment::Segment};
 
 use super::*;
 
-mod segment;
 mod spell;
 
-use segment::*;
 use spell::*;
 
 pub struct SpellBook {
@@ -53,10 +51,11 @@ impl SpellBook {
     }
 
     fn finish_cast(&mut self) -> Option<&Command> {
-        let spell_cast = self.player_cast.take().unwrap();
-        for spell in &self.spells {
-            if spell.cast(&spell_cast) {
-                return Some(spell.command());
+        if let Some(spell_cast) = self.player_cast.take() {
+            for spell in &self.spells {
+                if spell.cast(&spell_cast) {
+                    return Some(spell.command());
+                }
             }
         }
         None

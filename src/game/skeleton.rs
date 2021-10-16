@@ -54,6 +54,8 @@ pub struct SkeletonArcher {
     pub sprite: Sprite,
     pub state: SkeletonState,
     pub health: Health,
+    pub shoot_timer: f32,
+    pub shoot_cooldown: f32,
 }
 
 impl SkeletonArcher {
@@ -63,6 +65,7 @@ impl SkeletonArcher {
         spawn_time: f32,
         health: Health,
         acceleration: f32,
+        shoot_cooldown: f32,
         texture: &Texture,
     ) -> Self {
         Self {
@@ -74,6 +77,8 @@ impl SkeletonArcher {
                 time_left: spawn_time,
             },
             health,
+            shoot_cooldown,
+            shoot_timer: shoot_cooldown,
         }
     }
 
@@ -103,6 +108,7 @@ impl GameState {
             constants::SKELETON_SPAWN_TIME,
             Health::new(constants::SKELETON_HEALTH),
             constants::SKELETON_ACCELERATION,
+            constants::SKELETON_ARCHER_COOLDOWN,
             &self.assets.sprites.skeleton,
         );
         self.skeletons_archers.push(skeleton);

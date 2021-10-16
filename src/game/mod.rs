@@ -12,6 +12,7 @@ mod knight;
 mod particle;
 mod physics;
 mod player;
+mod projectile;
 mod skeleton;
 mod textured_circle;
 mod update;
@@ -26,6 +27,7 @@ use knight::*;
 use particle::*;
 use physics::*;
 use player::*;
+use projectile::*;
 use skeleton::*;
 use textured_circle::*;
 use velocity::*;
@@ -43,6 +45,7 @@ pub(crate) struct GameState {
     player: Player,
     skeletons_warriors: Vec<SkeletonWarrior>,
     skeletons_archers: Vec<SkeletonArcher>,
+    projectiles: Vec<Projectile>,
     knights: Vec<Knight>,
     particles: Vec<Particle>,
 
@@ -78,6 +81,7 @@ impl GameState {
             ),
             skeletons_warriors: vec![],
             skeletons_archers: vec![],
+            projectiles: vec![],
             knights: vec![],
             particles: vec![],
 
