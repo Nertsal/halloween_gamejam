@@ -56,6 +56,7 @@ struct Sprites {
     skeleton: Texture,
     necromancer: Texture,
     knight: Texture,
+    castle: Texture,
 }
 
 macro_rules! sprites_init {
@@ -68,7 +69,7 @@ macro_rules! sprites_init {
 
 impl Sprites {
     fn init(&mut self) {
-        sprites_init!(self.skeleton, self.necromancer, self.knight);
+        sprites_init!(self.skeleton, self.necromancer, self.knight, self.castle);
     }
 }
 

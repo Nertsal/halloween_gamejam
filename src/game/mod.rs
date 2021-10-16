@@ -2,6 +2,7 @@ use geng::Camera2d;
 
 use super::*;
 
+mod castle;
 mod constants;
 mod draw;
 mod health;
@@ -13,6 +14,7 @@ mod skeleton;
 mod update;
 mod velocity;
 
+use castle::*;
 use health::*;
 use knight::*;
 use particle::*;
@@ -28,6 +30,7 @@ pub(crate) struct GameState {
     framebuffer_size: Vec2<f32>,
 
     player: Player,
+    castle: Castle,
     skeletons: Vec<Skeleton>,
     knights: Vec<Knight>,
     particles: Vec<Particle>,
@@ -50,6 +53,13 @@ impl GameState {
                 constants::PLAYER_SPEED,
                 Health::new(constants::PLAYER_HEALTH),
                 &assets.sprites.necromancer,
+            ),
+            castle: Castle::new(
+                Circle::new(
+                    vec2(0.0, 47.5 - constants::CASTLE_SIZE),
+                    constants::CASTLE_SIZE,
+                ),
+                &assets.sprites.castle,
             ),
             skeletons: vec![],
             knights: vec![],

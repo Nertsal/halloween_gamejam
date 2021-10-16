@@ -93,6 +93,9 @@ impl GameState {
         // Player
         sprites.push((&self.player.circle, &self.player.sprite));
 
+        // Castle
+        sprites.push((&self.castle.circle, &self.castle.sprite));
+
         for renderable in sprites {
             renderable.draw(framebuffer, self.geng.draw_2d(), &self.camera);
         }

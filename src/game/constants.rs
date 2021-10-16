@@ -29,3 +29,5 @@ pub const KNIGHT_ACCELERATION: f32 = 10.0;
 
 pub const PARTICLE_ALPHA: f32 = 0.5;
 pub const PARTICLE_DECAY_SPEED: f32 = 0.5;
+
+pub const CASTLE_SIZE: f32 = 12.0;
