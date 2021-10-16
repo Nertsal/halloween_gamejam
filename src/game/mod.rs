@@ -41,7 +41,8 @@ pub(crate) struct GameState {
     difficulty: Difficulty,
     spawn_timer: Option<(f32, usize)>,
     player: Player,
-    skeletons: Vec<Skeleton>,
+    skeletons_warriors: Vec<SkeletonWarrior>,
+    skeletons_archers: Vec<SkeletonArcher>,
     knights: Vec<Knight>,
     particles: Vec<Particle>,
 
@@ -75,7 +76,8 @@ impl GameState {
                 Mana::new(constants::PLAYER_MANA),
                 &assets.sprites.necromancer,
             ),
-            skeletons: vec![],
+            skeletons_warriors: vec![],
+            skeletons_archers: vec![],
             knights: vec![],
             particles: vec![],
 

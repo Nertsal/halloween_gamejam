@@ -67,7 +67,8 @@ impl GameState {
             );
         }
 
-        let entities = self.skeletons.len() + self.knights.len();
+        let entities =
+            self.skeletons_warriors.len() + self.skeletons_archers.len() + self.knights.len();
         let mut sprites = Vec::with_capacity(entities + 1);
         let mut healths = Vec::with_capacity(entities);
 
@@ -80,7 +81,11 @@ impl GameState {
         }
 
         // Skeletons
-        for skeleton in &self.skeletons {
+        for skeleton in &self.skeletons_warriors {
+            sprites.push((&skeleton.circle, &skeleton.sprite));
+            healths.push((&skeleton.circle, &skeleton.health));
+        }
+        for skeleton in &self.skeletons_archers {
             sprites.push((&skeleton.circle, &skeleton.sprite));
             healths.push((&skeleton.circle, &skeleton.health));
         }

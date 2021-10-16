@@ -43,7 +43,10 @@ impl GameState {
         self.player.circle.position += self.player.velocity * delta_time;
 
         // Skeletons
-        for skeleton in &mut self.skeletons {
+        for skeleton in &mut self.skeletons_warriors {
+            skeleton.circle.position += skeleton.velocity.current * delta_time;
+        }
+        for skeleton in &mut self.skeletons_archers {
             skeleton.circle.position += skeleton.velocity.current * delta_time;
         }
 
@@ -75,7 +78,21 @@ impl GameState {
 
         // Knights - Skeletons
         for knight in &mut self.knights {
-            for skeleton in &mut self.skeletons {
+            for skeleton in &mut self.skeletons_warriors {
+                if let Some(collision) = knight.circle.collision(&skeleton.circle) {
+                    let shift = collision.normal * collision.penetration / 2.0;
+                    knight.circle.position -= shift;
+                    skeleton.circle.position += shift;
+
+                    skeleton.velocity.current += collision.normal * constants::KNIGHT_HIT_FORCE;
+
+                    skeleton.health.change(-constants::KNIGHT_HIT_STRENGTH);
+                    if knight.health.change(-constants::SKELETON_HIT_STRENGTH) {
+                        self.player.mana.change(constants::KNIGHT_KILL_MANA);
+                    }
+                }
+            }
+            for skeleton in &mut self.skeletons_archers {
                 if let Some(collision) = knight.circle.collision(&skeleton.circle) {
                     let shift = collision.normal * collision.penetration / 2.0;
                     knight.circle.position -= shift;
@@ -94,7 +111,10 @@ impl GameState {
 
     fn kill(&mut self) {
         self.knights.retain(|knight| knight.health.is_alive());
-        self.skeletons.retain(|skeleton| skeleton.health.is_alive());
+        self.skeletons_warriors
+            .retain(|skeleton| skeleton.health.is_alive());
+        self.skeletons_archers
+            .retain(|skeleton| skeleton.health.is_alive());
     }
 
     fn update_player(&mut self) {
@@ -128,7 +148,27 @@ impl GameState {
     fn update_skeletons(&mut self, delta_time: f32) {
         let mut particles = Vec::new();
 
-        for skeleton in &mut self.skeletons {
+        for skeleton in &mut self.skeletons_warriors {
+            match &mut skeleton.state {
+                SkeletonState::Spawning { time_left } => {
+                    *time_left -= delta_time;
+                    if *time_left <= 0.0 {
+                        skeleton.state = SkeletonState::Alive;
+                        particles.push((
+                            skeleton.circle.position,
+                            0.25,
+                            3.0,
+                            Color::rgba(0.5, 0.5, 0.5, constants::PARTICLE_ALPHA),
+                            50,
+                        ));
+                    }
+                }
+                SkeletonState::Alive => {
+                    skeleton.velocity.accelerate(delta_time);
+                }
+            }
+        }
+        for skeleton in &mut self.skeletons_archers {
             match &mut skeleton.state {
                 SkeletonState::Spawning { time_left } => {
                     *time_left -= delta_time;
@@ -158,10 +198,15 @@ impl GameState {
         for knight in &mut self.knights {
             // Find target
             let targets = self
-                .skeletons
+                .skeletons_warriors
                 .iter()
-                .map(|skeleton| skeleton.circle.position);
-            let targets = targets.chain(std::iter::once(self.player.circle.position));
+                .map(|skeleton| skeleton.circle.position)
+                .chain(
+                    self.skeletons_archers
+                        .iter()
+                        .map(|skeleton| skeleton.circle.position),
+                )
+                .chain(std::iter::once(self.player.circle.position));
             let targets =
                 targets.map(|position| (position, (position - knight.circle.position).len()));
             let target = targets

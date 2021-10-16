@@ -17,21 +17,23 @@ impl GameState {
         match command {
             Command::Spawn { spawn } => match spawn {
                 CommandSpawn::Skeleton { skeleton_type } => {
-                    let success = match skeleton_type {
-                        SkeletonType::Warrior => {
-                            self.player.mana.try_change(-constants::SPELL_WARRIOR_COST)
-                        }
-                        SkeletonType::Archer => {
-                            self.player.mana.try_change(-constants::SPELL_ARCHER_COST)
-                        }
-                    };
-                    if !success {
-                        return;
-                    }
-
                     let grave = self.graves.choose(&mut rng).unwrap();
                     let position = grave.bottom();
-                    self.spawn_skeleton(position, skeleton_type)
+
+                    match skeleton_type {
+                        SkeletonType::Warrior => {
+                            if !self.player.mana.try_change(-constants::SPELL_WARRIOR_COST) {
+                                return;
+                            }
+                            self.spawn_skeleton_warrior(position);
+                        }
+                        SkeletonType::Archer => {
+                            if !self.player.mana.try_change(-constants::SPELL_ARCHER_COST) {
+                                return;
+                            }
+                            self.spawn_skeleton_archer(position);
+                        }
+                    };
                 }
             },
         }
