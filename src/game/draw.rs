@@ -129,7 +129,7 @@ impl GameState {
         );
         let offset = 0.5;
         let health_aabb = bar_aabb.extend_uniform(-offset).extend_positive(vec2(
-            (self.player.health.fraction() - 1.0) * (bar_width - offset),
+            (self.player.health.fraction() - 1.0) * (bar_width - offset * 2.0),
             0.0,
         ));
         self.geng.draw_2d().quad(
@@ -137,6 +137,40 @@ impl GameState {
             &self.camera,
             health_aabb,
             Color::rgb(0.0, 0.7, 0.0),
+        );
+
+        // Player mana
+        self.assets.font.draw(
+            framebuffer,
+            &self.camera,
+            "Mana",
+            vec2(camera_view.x_min + 3.0, camera_view.y_max - 12.0),
+            geng::TextAlign::LEFT,
+            3.5,
+            Color::WHITE,
+        );
+
+        // Draw player mana
+        let bar_position = vec2(camera_view.x_min + 3.0, camera_view.y_max - 15.0);
+        let bar_width = bar_width * self.player.mana.max() / self.player.health.max();
+        let bar_height = 2.0;
+        let bar_aabb = AABB::point(bar_position).extend_positive(vec2(bar_width, bar_height));
+        self.geng.draw_2d().quad(
+            framebuffer,
+            &self.camera,
+            bar_aabb,
+            Color::rgb(0.0, 0.0, 0.3),
+        );
+        let offset = 0.5;
+        let mana_aabb = bar_aabb.extend_uniform(-offset).extend_positive(vec2(
+            (self.player.mana.fraction() - 1.0) * (bar_width - offset * 2.0),
+            0.0,
+        ));
+        self.geng.draw_2d().quad(
+            framebuffer,
+            &self.camera,
+            mana_aabb,
+            Color::rgb(0.0, 0.0, 0.7),
         );
     }
 }

@@ -10,8 +10,13 @@ pub const BACKGROUND_COLOR: Color<f32> = Color {
 pub const PLAYER_SPEED: f32 = 10.0;
 pub const PLAYER_RADIUS: f32 = 2.5;
 pub const PLAYER_HEALTH: f32 = 100.0;
+pub const PLAYER_MANA: f32 = 100.0;
 pub const PLAYER_HIT_STRENGTH: f32 = 10.0;
 pub const PLAYER_HIT_FORCE: f32 = 25.0;
+
+pub const SPELL_WARRIOR_COST: f32 = 10.0;
+pub const SPELL_ARCHER_COST: f32 = 20.0;
+pub const SPELL_FIREBALL_COST: f32 = 50.0;
 
 pub const SKELETON_SPEED: f32 = 12.5;
 pub const SKELETON_RADIUS: f32 = 2.5;

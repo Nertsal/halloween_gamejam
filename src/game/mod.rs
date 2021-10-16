@@ -66,6 +66,7 @@ impl GameState {
                 Circle::new(Vec2::ZERO, constants::PLAYER_RADIUS),
                 constants::PLAYER_SPEED,
                 Health::new(constants::PLAYER_HEALTH),
+                Mana::new(constants::PLAYER_MANA),
                 &assets.sprites.necromancer,
             ),
             skeletons: vec![],

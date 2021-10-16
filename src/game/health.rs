@@ -9,6 +9,10 @@ impl Health {
         Self { current: max, max }
     }
 
+    pub fn max(&self) -> f32 {
+        self.max
+    }
+
     pub fn change(&mut self, delta: f32) -> bool {
         self.current += delta;
         self.current = self.current.clamp(0.0, self.max);
@@ -21,5 +25,13 @@ impl Health {
 
     pub fn is_alive(&self) -> bool {
         self.current > 0.0
+    }
+
+    pub fn try_change(&mut self, delta: f32) -> bool {
+        if self.current < -delta {
+            return false;
+        }
+        self.change(delta);
+        true
     }
 }

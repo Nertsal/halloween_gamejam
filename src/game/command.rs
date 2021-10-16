@@ -8,7 +8,6 @@ pub enum Command {
 #[derive(Clone)]
 pub enum CommandSpawn {
     Skeleton { skeleton_type: SkeletonType },
-    Knight,
 }
 
 impl GameState {
@@ -18,11 +17,22 @@ impl GameState {
         match command {
             Command::Spawn { spawn } => match spawn {
                 CommandSpawn::Skeleton { skeleton_type } => {
+                    let success = match skeleton_type {
+                        SkeletonType::Warrior => {
+                            self.player.mana.try_change(-constants::SPELL_WARRIOR_COST)
+                        }
+                        SkeletonType::Archer => {
+                            self.player.mana.try_change(-constants::SPELL_ARCHER_COST)
+                        }
+                    };
+                    if !success {
+                        return;
+                    }
+
                     let grave = self.graves.choose(&mut rng).unwrap();
                     let position = grave.bottom();
                     self.spawn_skeleton(position, skeleton_type)
                 }
-                CommandSpawn::Knight => self.spawn_knight(self.castle.bottom()),
             },
         }
     }
