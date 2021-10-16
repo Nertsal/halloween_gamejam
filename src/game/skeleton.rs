@@ -3,7 +3,7 @@ use super::*;
 pub struct Skeleton {
     pub circle: Circle,
     pub speed: f32,
-    pub velocity: Vec2<f32>,
+    pub velocity: Velocity,
     pub sprite: Sprite,
     pub state: SkeletonState,
     pub health: Health,
@@ -20,12 +20,13 @@ impl Skeleton {
         speed: f32,
         spawn_time: f32,
         health: Health,
+        acceleration: f32,
         texture: &Texture,
     ) -> Self {
         Self {
             circle,
             speed,
-            velocity: Vec2::ZERO,
+            velocity: Velocity::new(acceleration),
             sprite: texture.into(),
             state: SkeletonState::Spawning {
                 time_left: spawn_time,
@@ -42,6 +43,7 @@ impl GameState {
             constants::SKELETON_SPEED,
             constants::SKELETON_SPAWN_TIME,
             Health::new(constants::SKELETON_HEALTH),
+            constants::SKELETON_ACCELERATION,
             &self.assets.sprites.skeleton,
         );
         self.skeletons.push(skeleton);

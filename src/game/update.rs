@@ -10,6 +10,8 @@ impl GameState {
         self.movement(delta_time);
 
         self.collision();
+
+        self.kill();
     }
 
     fn movement(&mut self, delta_time: f32) {
@@ -18,10 +20,10 @@ impl GameState {
 
         // Skeletons
         for skeleton in &mut self.skeletons {
-            skeleton.circle.position += skeleton.velocity * delta_time;
+            skeleton.circle.position += skeleton.velocity.current * delta_time;
         }
 
-        // Knigths
+        // Knights
         for knight in &mut self.knights {
             knight.circle.position += knight.velocity.current * delta_time;
         }
@@ -46,6 +48,25 @@ impl GameState {
         }
 
         // Knights - Skeletons
+        for knight in &mut self.knights {
+            for skeleton in &mut self.skeletons {
+                if let Some(collision) = knight.circle.collision(&skeleton.circle) {
+                    let shift = collision.normal * collision.penetration / 2.0;
+                    knight.circle.position -= shift;
+                    skeleton.circle.position += shift;
+
+                    skeleton.velocity.current += collision.normal * constants::KNIGHT_HIT_FORCE;
+
+                    knight.health.change(-constants::SKELETON_HIT_STRENGTH);
+                    skeleton.health.change(-constants::KNIGHT_HIT_STRENGTH);
+                }
+            }
+        }
+    }
+
+    fn kill(&mut self) {
+        self.knights.retain(|knight| knight.health.is_alive());
+        self.skeletons.retain(|skeleton| skeleton.health.is_alive());
     }
 
     fn update_player(&mut self) {
@@ -94,7 +115,9 @@ impl GameState {
                         ));
                     }
                 }
-                SkeletonState::Alive => (),
+                SkeletonState::Alive => {
+                    skeleton.velocity.accelerate(delta_time);
+                }
             }
         }
 

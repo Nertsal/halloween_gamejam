@@ -18,4 +18,8 @@ impl Health {
     pub fn fraction(&self) -> f32 {
         self.current / self.max
     }
+
+    pub fn is_alive(&self) -> bool {
+        self.current > 0.0
+    }
 }
