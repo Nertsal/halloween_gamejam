@@ -2,10 +2,7 @@ use super::*;
 
 #[derive(Clone)]
 pub enum Command {
-    Spawn {
-        position: Vec2<f32>,
-        spawn: CommandSpawn,
-    },
+    Spawn { spawn: CommandSpawn },
 }
 
 #[derive(Clone)]
@@ -16,12 +13,15 @@ pub enum CommandSpawn {
 
 impl GameState {
     pub fn perform_command(&mut self, command: Command) {
+        let mut rng = global_rng();
+
         match command {
-            Command::Spawn { position, spawn } => match spawn {
+            Command::Spawn { spawn } => match spawn {
                 CommandSpawn::Skeleton { skeleton_type } => {
-                    self.spawn_skeleton(position, skeleton_type)
+                    let grave = self.graves.choose(&mut rng).unwrap();
+                    self.spawn_skeleton(grave.bottom(), skeleton_type)
                 }
-                CommandSpawn::Knight => self.spawn_knight(position),
+                CommandSpawn::Knight => self.spawn_knight(self.castle.bottom()),
             },
         }
     }

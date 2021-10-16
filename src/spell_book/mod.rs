@@ -33,7 +33,6 @@ impl SpellBook {
             spells: vec![
                 Spell::new(
                     Command::Spawn {
-                        position: Vec2::ZERO,
                         spawn: CommandSpawn::Skeleton {
                             skeleton_type: SkeletonType::Archer,
                         },
@@ -42,7 +41,6 @@ impl SpellBook {
                 ),
                 Spell::new(
                     Command::Spawn {
-                        position: Vec2::ZERO,
                         spawn: CommandSpawn::Skeleton {
                             skeleton_type: SkeletonType::Warrior,
                         },
