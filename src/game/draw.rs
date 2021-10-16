@@ -24,6 +24,34 @@ impl Renderable for (&Circle, &Sprite) {
     }
 }
 
+impl Renderable for (&Circle, &Health) {
+    fn draw(
+        &self,
+        framebuffer: &mut ugli::Framebuffer,
+        draw_2d: &Rc<geng::Draw2D>,
+        camera: &Camera2d,
+    ) {
+        let circle = self.0;
+        let health = self.1;
+        if health.fraction() == 1.0 {
+            return;
+        }
+
+        let bar_position = circle.position + vec2(0.0, circle.radius);
+        let bar_width = circle.radius;
+        let bar_height = 1.0;
+        let bar_aabb = AABB::point(bar_position)
+            .extend_up(bar_height)
+            .extend_symmetric(vec2(bar_width / 2.0, 0.0));
+        draw_2d.quad(framebuffer, camera, bar_aabb, Color::rgb(0.0, 0.3, 0.0));
+        let offset = bar_height * 0.2;
+        let health_aabb = bar_aabb
+            .extend_uniform(-offset)
+            .extend_positive(vec2((health.fraction() - 1.0) * (bar_width - offset), 0.0));
+        draw_2d.quad(framebuffer, camera, health_aabb, Color::rgb(0.0, 0.7, 0.0));
+    }
+}
+
 impl GameState {
     pub fn draw_impl(&mut self, framebuffer: &mut ugli::Framebuffer) {
         ugli::clear(framebuffer, Some(constants::BACKGROUND_COLOR), None);
@@ -45,22 +73,29 @@ impl GameState {
             );
         }
 
-        let mut renderables = Vec::with_capacity(self.skeletons.len() + self.knights.len() + 1);
+        let entities = self.skeletons.len() + self.knights.len();
+        let mut sprites = Vec::with_capacity(entities + 1);
+        let mut healths = Vec::with_capacity(entities);
 
         // Skeletons
         for skeleton in &self.skeletons {
-            renderables.push((&skeleton.circle, &skeleton.sprite));
+            sprites.push((&skeleton.circle, &skeleton.sprite));
+            healths.push((&skeleton.circle, &skeleton.health));
         }
 
         // Knights
         for knight in &self.knights {
-            renderables.push((&knight.circle, &knight.sprite));
+            sprites.push((&knight.circle, &knight.sprite));
+            // healths.push((&knight.circle, &knight.health));
         }
 
         // Player
-        renderables.push((&self.player.circle, &self.player.sprite));
+        sprites.push((&self.player.circle, &self.player.sprite));
 
-        for renderable in renderables {
+        for renderable in sprites {
+            renderable.draw(framebuffer, self.geng.draw_2d(), &self.camera);
+        }
+        for renderable in healths {
             renderable.draw(framebuffer, self.geng.draw_2d(), &self.camera);
         }
     }
