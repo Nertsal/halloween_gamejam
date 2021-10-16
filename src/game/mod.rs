@@ -11,6 +11,7 @@ mod physics;
 mod player;
 mod skeleton;
 mod update;
+mod velocity;
 
 use health::*;
 use knight::*;
@@ -18,6 +19,7 @@ use particle::*;
 use physics::*;
 use player::*;
 use skeleton::*;
+use velocity::*;
 
 pub(crate) struct GameState {
     geng: Geng,

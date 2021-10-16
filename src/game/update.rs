@@ -8,6 +8,8 @@ impl GameState {
         self.update_knights(delta_time);
 
         self.movement(delta_time);
+
+        self.collision();
     }
 
     fn movement(&mut self, delta_time: f32) {
@@ -21,13 +23,29 @@ impl GameState {
 
         // Knigths
         for knight in &mut self.knights {
-            knight.circle.position += knight.velocity * delta_time;
+            knight.circle.position += knight.velocity.current * delta_time;
         }
 
         // Particles
         for particle in &mut self.particles {
             particle.circle.position += particle.velocity * delta_time;
         }
+    }
+
+    fn collision(&mut self) {
+        // Player - Knights
+        let player = &mut self.player;
+        for knight in &mut self.knights {
+            if let Some(collision) = player.circle.collision(&knight.circle) {
+                knight.circle.position += collision.normal * collision.penetration;
+                knight.velocity.current += collision.normal * constants::PLAYER_HIT_FORCE;
+
+                knight.health.change(-constants::PLAYER_HIT_STRENGTH);
+                player.health.change(-constants::KNIGHT_HIT_STRENGTH);
+            }
+        }
+
+        // Knights - Skeletons
     }
 
     fn update_player(&mut self) {
@@ -99,6 +117,9 @@ impl GameState {
                 .min_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
                 .expect("Is player dead?");
             knight.target(target.0);
+
+            // Accelerate
+            knight.velocity.accelerate(delta_time);
         }
     }
 
