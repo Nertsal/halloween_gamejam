@@ -215,21 +215,29 @@ impl GameState {
                         skeleton.shoot_timer -= delta_time;
                     }
 
-                    let targets = self.knights.iter().map(|knight| knight.circle.position);
-                    let targets = targets
-                        .map(|position| (position, (position - skeleton.circle.position).len()));
-                    let (target, distance) = targets
-                        .min_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
-                        .unwrap_or((skeleton.circle.position, 0.0));
-                    let target = if distance <= 1e-5 {
+                    let targets = self.knights.iter().map(|knight| {
+                        (
+                            knight,
+                            (knight.circle.position - skeleton.circle.position).len(),
+                        )
+                    });
+                    let target = targets.min_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap());
+                    let target = if target.map(|(_, distance)| distance).unwrap_or_default() <= 1e-5
+                    {
                         skeleton.circle.position
                     } else {
-                        let direction = (skeleton.circle.position - target) / distance;
+                        let (target, distance) = target.unwrap();
                         if skeleton.shoot_timer <= 0.0 {
-                            projectiles.push((skeleton.circle.position, -direction));
+                            let time = distance / constants::ARROW_SPEED;
+                            let prediction =
+                                target.circle.position + target.velocity.current * time;
+                            let direction = (prediction - skeleton.circle.position).normalize();
+                            projectiles.push((skeleton.circle.position, direction));
                             skeleton.shoot_timer = skeleton.shoot_cooldown;
                         }
 
+                        let target = target.circle.position;
+                        let direction = (skeleton.circle.position - target) / distance;
                         direction * constants::SKELETON_ARCHER_DISTANCE + target
                     };
                     skeleton.target(target);
