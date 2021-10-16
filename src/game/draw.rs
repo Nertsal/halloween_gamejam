@@ -78,6 +78,9 @@ impl GameState {
         let mut sprites = Vec::with_capacity(entities + 1);
         let mut healths = Vec::with_capacity(entities);
 
+        // Castle
+        sprites.push((&self.castle.circle, &self.castle.sprite));
+
         // Skeletons
         for skeleton in &self.skeletons {
             sprites.push((&skeleton.circle, &skeleton.sprite));
@@ -92,9 +95,6 @@ impl GameState {
 
         // Player
         sprites.push((&self.player.circle, &self.player.sprite));
-
-        // Castle
-        sprites.push((&self.castle.circle, &self.castle.sprite));
 
         for renderable in sprites {
             renderable.draw(framebuffer, self.geng.draw_2d(), &self.camera);

@@ -84,7 +84,7 @@ impl geng::State for GameState {
                 let position = self.camera.screen_to_world(self.framebuffer_size, position);
                 match button {
                     geng::MouseButton::Left => self.spawn_skeleton(position),
-                    geng::MouseButton::Right => self.spawn_knight(position),
+                    geng::MouseButton::Right => self.spawn_knight(self.castle.spawn_position()),
                     _ => (),
                 }
             }
