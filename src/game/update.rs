@@ -88,6 +88,8 @@ impl GameState {
                     skeleton.circle.position += shift;
 
                     skeleton.velocity.current += collision.normal * constants::KNIGHT_HIT_FORCE;
+                    knight.velocity.current -=
+                        collision.normal * constants::SKELETON_WARRIOR_HIT_FORCE;
 
                     skeleton.health.change(-constants::KNIGHT_HIT_STRENGTH);
                     knight.health.change(-constants::SKELETON_HIT_STRENGTH);
@@ -229,9 +231,8 @@ impl GameState {
                     } else {
                         let (target, distance) = target.unwrap();
                         if skeleton.shoot_timer <= 0.0 {
-                            let time = distance / constants::ARROW_SPEED;
-                            let prediction =
-                                target.circle.position + target.velocity.current * time;
+                            // let time = distance / constants::ARROW_SPEED;
+                            let prediction = target.circle.position; // + target.velocity.current * time;
                             let direction = (prediction - skeleton.circle.position).normalize();
                             direction.rotate(rng.gen_range(
                                 -constants::SKELETON_ARCHER_RANDOMNESS

@@ -92,11 +92,11 @@ impl GameState {
     pub fn spawn_skeleton_warrior(&mut self, position: Vec2<f32>) {
         let skeleton = SkeletonWarrior::new(
             Circle::new(position, constants::SKELETON_RADIUS),
-            constants::SKELETON_SPEED,
+            constants::SKELETON_WARRIOR_SPEED,
             constants::SKELETON_SPAWN_TIME,
-            Health::new(constants::SKELETON_HEALTH),
+            Health::new(constants::SKELETON_WARRIOR_HEALTH),
             constants::SKELETON_ACCELERATION,
-            &self.assets.sprites.skeleton,
+            &self.assets.sprites.skeleton_warrior,
         );
         self.skeletons_warriors.push(skeleton);
     }
@@ -104,12 +104,12 @@ impl GameState {
     pub fn spawn_skeleton_archer(&mut self, position: Vec2<f32>) {
         let skeleton = SkeletonArcher::new(
             Circle::new(position, constants::SKELETON_RADIUS),
-            constants::SKELETON_SPEED,
+            constants::SKELETON_ARCHER_SPEED,
             constants::SKELETON_SPAWN_TIME,
-            Health::new(constants::SKELETON_HEALTH),
+            Health::new(constants::SKELETON_ARCHER_HEALTH),
             constants::SKELETON_ACCELERATION,
             constants::SKELETON_ARCHER_COOLDOWN,
-            &self.assets.sprites.skeleton,
+            &self.assets.sprites.skeleton_archer,
         );
         self.skeletons_archers.push(skeleton);
     }

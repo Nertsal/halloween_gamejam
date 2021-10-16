@@ -57,7 +57,8 @@ impl geng::LoadAsset for Font {
 
 #[derive(geng::Assets)]
 struct Sprites {
-    skeleton: Texture,
+    skeleton_warrior: Texture,
+    skeleton_archer: Texture,
     necromancer: Texture,
     knight: Texture,
     castle: Texture,
@@ -77,7 +78,8 @@ macro_rules! sprites_init {
 impl Sprites {
     fn init(&mut self) {
         sprites_init!(
-            self.skeleton,
+            self.skeleton_warrior,
+            self.skeleton_archer,
             self.necromancer,
             self.knight,
             self.castle,
