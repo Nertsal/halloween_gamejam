@@ -16,6 +16,11 @@ impl Knight {
             sprite: texture.into(),
         }
     }
+
+    pub fn target(&mut self, target_pos: Vec2<f32>) {
+        let direction = target_pos - self.circle.position;
+        self.velocity = direction.clamp(self.speed);
+    }
 }
 
 impl GameState {

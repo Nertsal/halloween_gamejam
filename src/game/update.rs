@@ -85,7 +85,22 @@ impl GameState {
         }
     }
 
-    fn update_knights(&mut self, delta_time: f32) {}
+    fn update_knights(&mut self, delta_time: f32) {
+        for knight in &mut self.knights {
+            // Find target
+            let targets = self
+                .skeletons
+                .iter()
+                .map(|skeleton| skeleton.circle.position);
+            let targets = targets.chain(std::iter::once(self.player.circle.position));
+            let targets =
+                targets.map(|position| (position, (position - knight.circle.position).len()));
+            let target = targets
+                .min_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
+                .expect("Is player dead?");
+            knight.target(target.0);
+        }
+    }
 
     fn update_particles(&mut self, delta_time: f32) {
         for particle in &mut self.particles {
