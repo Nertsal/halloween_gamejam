@@ -13,6 +13,7 @@ mod particle;
 mod physics;
 mod player;
 mod projectile;
+mod rogue;
 mod skeleton;
 mod textured_circle;
 mod update;
@@ -28,6 +29,7 @@ use particle::*;
 use physics::*;
 use player::*;
 use projectile::*;
+use rogue::*;
 use skeleton::*;
 use textured_circle::*;
 use velocity::*;
@@ -48,6 +50,7 @@ pub(crate) struct GameState {
     skeletons_archers: Vec<SkeletonArcher>,
     projectiles: Vec<Projectile>,
     knights: Vec<Knight>,
+    rogues: Vec<Rogue>,
     particles: Vec<Particle>,
 
     // Cosmetic
@@ -86,6 +89,7 @@ impl GameState {
             skeletons_archers: vec![],
             projectiles: vec![],
             knights: vec![],
+            rogues: vec![],
             particles: vec![],
 
             castle: TexturedCircle::new(

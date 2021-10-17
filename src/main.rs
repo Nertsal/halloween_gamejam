@@ -63,12 +63,14 @@ struct Sprites {
     skeleton_archer: Texture,
     necromancer: Texture,
     knight: Texture,
+    rogue: Texture,
     castle: Texture,
     #[asset(path = "grave/*.png", range = "1..=3")]
     graves: Vec<Texture>,
     arrow: Texture,
     fireball: Texture,
     dead_knight: Texture,
+    dead_rogue: Texture,
     bone: Texture,
 }
 
@@ -94,10 +96,12 @@ impl Sprites {
             self.skeleton_archer,
             self.necromancer,
             self.knight,
+            self.rogue,
             self.castle,
             self.arrow,
             self.fireball,
             self.dead_knight,
+            self.dead_rogue,
             self.bone
         );
         for grave in &mut self.graves {

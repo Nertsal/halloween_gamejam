@@ -40,7 +40,7 @@ pub const FIREBALL_EXPLOSION_DAMAGE: f32 = 20.0;
 
 pub const SKELETON_RADIUS: f32 = 2.5;
 pub const SKELETON_SPAWN_TIME: f32 = 0.5;
-pub const SKELETON_HIT_DAMAGE: f32 = 10.0;
+pub const SKELETON_HIT_DAMAGE: f32 = 15.0;
 pub const SKELETON_ACCELERATION: f32 = 10.0;
 
 pub const SKELETON_WARRIOR_SPEED: f32 = 12.5;
@@ -64,6 +64,14 @@ pub const KNIGHT_HEALTH: f32 = 30.0;
 pub const KNIGHT_HIT_DAMAGE: f32 = 10.0;
 pub const KNIGHT_HIT_FORCE: f32 = 5.0;
 pub const KNIGHT_ACCELERATION: f32 = 10.0;
+pub const KNIGHT_ARROW_RESISTANCE: f32 = 5.0;
+
+pub const ROGUE_SPEED: f32 = 10.0;
+pub const ROGUE_RADIUS: f32 = 2.5;
+pub const ROGUE_HEALTH: f32 = 20.0;
+pub const ROGUE_HIT_DAMAGE: f32 = 10.0;
+pub const ROGUE_HIT_FORCE: f32 = 5.0;
+pub const ROGUE_ACCELERATION: f32 = 15.0;
 
 pub const PARTICLE_ALPHA: f32 = 0.5;
 pub const PARTICLE_DECAY_SPEED: f32 = 0.5;

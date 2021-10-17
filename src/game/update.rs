@@ -5,18 +5,22 @@ impl GameState {
         self.difficulty.update(delta_time);
 
         if let Some((spawn_timer, spawns_left)) = &mut self.spawn_timer {
-            let mut spawn_knight = false;
+            let mut spawn_enemy = false;
             *spawn_timer -= delta_time;
             if *spawn_timer <= 0.0 {
                 *spawn_timer = constants::SPAWN_DELAY;
-                spawn_knight = true;
+                spawn_enemy = true;
                 *spawns_left -= 1;
                 if *spawns_left == 0 {
                     self.spawn_timer = None;
                 }
             }
-            if spawn_knight {
-                self.spawn_knight(self.castle.bottom());
+            if spawn_enemy {
+                if global_rng().gen_bool(0.5) {
+                    self.spawn_knight(self.castle.bottom());
+                } else {
+                    self.spawn_rogue(self.castle.bottom());
+                }
             }
         } else {
             if self.knights.len() == 0 {
@@ -59,6 +63,10 @@ impl GameState {
         for knight in &mut self.knights {
             knight.circle.position += knight.velocity.current * delta_time;
         }
+        // Rogues
+        for rogue in &mut self.rogues {
+            rogue.circle.position += rogue.velocity.current * delta_time;
+        }
 
         // Particles
         for particle in &mut self.particles {
@@ -76,6 +84,19 @@ impl GameState {
 
                 player.health.change(-constants::KNIGHT_HIT_DAMAGE);
                 knight.health.change(-constants::PLAYER_HIT_DAMAGE);
+                self.assets.sounds.hit.play();
+            }
+        }
+
+        // Player - Rogues
+        let player = &mut self.player;
+        for rogue in &mut self.rogues {
+            if let Some(collision) = player.circle.collision(&rogue.circle) {
+                rogue.circle.position += collision.normal * collision.penetration;
+                rogue.velocity.current += collision.normal * constants::PLAYER_HIT_FORCE;
+
+                player.health.change(-constants::ROGUE_HIT_DAMAGE);
+                rogue.health.change(-constants::PLAYER_HIT_DAMAGE);
                 self.assets.sounds.hit.play();
             }
         }
@@ -116,6 +137,52 @@ impl GameState {
 
                     projectile.hit = true;
                     knight.health.change(-match projectile.typ {
+                        ProjectileType::Arrow => (constants::ARROW_HIT_DAMAGE
+                            - constants::KNIGHT_ARROW_RESISTANCE)
+                            .max(0.0),
+                        ProjectileType::Fireball => constants::FIREBALL_HIT_DAMAGE,
+                    });
+                    self.assets.sounds.hit.play();
+                }
+            }
+        }
+
+        // Rogues - Skeletons, Projectiles
+        for rogue in &mut self.rogues {
+            for skeleton in &mut self.skeletons_warriors {
+                if let Some(collision) = rogue.circle.collision(&skeleton.circle) {
+                    let shift = collision.normal * collision.penetration / 2.0;
+                    rogue.circle.position -= shift;
+                    skeleton.circle.position += shift;
+
+                    skeleton.velocity.current += collision.normal * constants::ROGUE_HIT_FORCE;
+                    rogue.velocity.current -=
+                        collision.normal * constants::SKELETON_WARRIOR_HIT_FORCE;
+
+                    skeleton.health.change(-constants::KNIGHT_HIT_DAMAGE);
+                    rogue.health.change(-constants::SKELETON_HIT_DAMAGE);
+                    self.assets.sounds.hit.play();
+                }
+            }
+            for skeleton in &mut self.skeletons_archers {
+                if let Some(collision) = rogue.circle.collision(&skeleton.circle) {
+                    let shift = collision.normal * collision.penetration / 2.0;
+                    rogue.circle.position -= shift;
+                    skeleton.circle.position += shift;
+
+                    skeleton.velocity.current += collision.normal * constants::ROGUE_HIT_FORCE;
+
+                    skeleton.health.change(-constants::KNIGHT_HIT_DAMAGE);
+                    rogue.health.change(-constants::SKELETON_HIT_DAMAGE);
+                    self.assets.sounds.hit.play();
+                }
+            }
+            for projectile in &mut self.projectiles {
+                if let Some(collision) = rogue.circle.collision(&projectile.circle) {
+                    rogue.velocity.current -= collision.normal * constants::ARROW_HIT_FORCE;
+
+                    projectile.hit = true;
+                    rogue.health.change(-match projectile.typ {
                         ProjectileType::Arrow => constants::ARROW_HIT_DAMAGE,
                         ProjectileType::Fireball => constants::FIREBALL_HIT_DAMAGE,
                     });
@@ -139,6 +206,7 @@ impl GameState {
     fn kill(&mut self) {
         let mut new_particles = Vec::new();
         let knights = &mut self.knights;
+        let rogues = &mut self.rogues;
         self.projectiles.retain(|projectile| {
             let hit = projectile.hit;
             if hit {
@@ -150,6 +218,13 @@ impl GameState {
                                 (knight.circle.position - projectile.circle.position).len();
                             if distance <= constants::FIREBALL_EXPLOSION_RADIUS {
                                 knight.health.change(-constants::FIREBALL_EXPLOSION_DAMAGE);
+                            }
+                        }
+                        for rogue in rogues.iter_mut() {
+                            let distance =
+                                (rogue.circle.position - projectile.circle.position).len();
+                            if distance <= constants::FIREBALL_EXPLOSION_RADIUS {
+                                rogue.health.change(-constants::FIREBALL_EXPLOSION_DAMAGE);
                             }
                         }
                         new_particles.push((
@@ -179,6 +254,23 @@ impl GameState {
                     0.0,
                     ParticleTexture::Textured {
                         texture: assets.sprites.dead_knight.clone(),
+                        alpha: constants::PARTICLE_ALPHA,
+                    },
+                    1,
+                ));
+            }
+            alive
+        });
+        self.rogues.retain(|rogue| {
+            let alive = rogue.health.is_alive();
+            if !alive {
+                player.mana.change(constants::KNIGHT_KILL_MANA);
+                new_particles.push((
+                    rogue.circle.position,
+                    rogue.circle.radius,
+                    0.0,
+                    ParticleTexture::Textured {
+                        texture: assets.sprites.dead_rogue.clone(),
                         alpha: constants::PARTICLE_ALPHA,
                     },
                     1,
@@ -274,7 +366,11 @@ impl GameState {
                 }
                 SkeletonState::Alive => {
                     // Find the target
-                    let targets = self.knights.iter().map(|knight| knight.circle.position);
+                    let targets = self
+                        .knights
+                        .iter()
+                        .map(|knight| knight.circle.position)
+                        .chain(self.rogues.iter().map(|rogue| rogue.circle.position));
                     let targets = targets
                         .map(|position| (position, (position - skeleton.circle.position).len()));
                     let (target, _) = targets
@@ -309,12 +405,12 @@ impl GameState {
                         skeleton.shoot_timer -= delta_time;
                     }
 
-                    let targets = self.knights.iter().map(|knight| {
-                        (
-                            knight,
-                            (knight.circle.position - skeleton.circle.position).len(),
-                        )
-                    });
+                    let targets = self
+                        .knights
+                        .iter()
+                        .map(|knight| knight.circle.position)
+                        .chain(self.rogues.iter().map(|rogue| (rogue.circle.position)))
+                        .map(|position| (position, (position - skeleton.circle.position).len()));
                     let target = targets.min_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap());
                     let target = if target.map(|(_, distance)| distance).unwrap_or_default() <= 1e-5
                     {
@@ -323,7 +419,7 @@ impl GameState {
                         let (target, distance) = target.unwrap();
                         if skeleton.shoot_timer <= 0.0 {
                             // let time = distance / constants::ARROW_SPEED;
-                            let prediction = target.circle.position; // + target.velocity.current * time;
+                            let prediction = target; // + target.velocity.current * time;
                             let direction = (prediction - skeleton.circle.position).normalize();
                             direction.rotate(rng.gen_range(
                                 -constants::SKELETON_ARCHER_RANDOMNESS
@@ -333,7 +429,7 @@ impl GameState {
                             skeleton.shoot_timer = skeleton.shoot_cooldown;
                         }
 
-                        let target = target.circle.position;
+                        let target = target;
                         let direction = (skeleton.circle.position - target) / distance;
                         direction * constants::SKELETON_ARCHER_DISTANCE + target
                     };
@@ -389,6 +485,29 @@ impl GameState {
 
             // Accelerate
             knight.velocity.accelerate(delta_time);
+        }
+
+        for rogue in &mut self.rogues {
+            // Find target
+            let targets = self
+                .skeletons_warriors
+                .iter()
+                .map(|skeleton| skeleton.circle.position)
+                .chain(
+                    self.skeletons_archers
+                        .iter()
+                        .map(|skeleton| skeleton.circle.position),
+                )
+                .chain(std::iter::once(self.player.circle.position));
+            let targets =
+                targets.map(|position| (position, (position - rogue.circle.position).len()));
+            let target = targets
+                .min_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
+                .expect("Is player dead?");
+            rogue.target(target.0);
+
+            // Accelerate
+            rogue.velocity.accelerate(delta_time);
         }
     }
 

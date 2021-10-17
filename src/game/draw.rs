@@ -144,6 +144,11 @@ impl GameState {
             sprites.push((&knight.circle, &knight.sprite));
             healths.push((&knight.circle, &knight.health));
         }
+        // Rogues
+        for rogue in &self.rogues {
+            sprites.push((&rogue.circle, &rogue.sprite));
+            healths.push((&rogue.circle, &rogue.health));
+        }
 
         // Player
         sprites.push((&self.player.circle, &self.player.sprite));
