@@ -87,7 +87,7 @@ impl geng::State for MenuState {
                 key: geng::Key::Enter,
             } => {
                 self.transition = true;
-                // self.assets.sounds.select.play();
+                self.assets.sounds.select.play();
             }
             _ => (),
         }

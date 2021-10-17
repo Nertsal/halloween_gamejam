@@ -34,6 +34,7 @@ struct Assets {
     #[asset(path = "fonts/NF_pixels/fonts/ttf/NFPixels-Regular.ttf")]
     font: Font,
     sprites: Sprites,
+    sounds: Sounds,
 }
 
 #[derive(Deref)]
@@ -67,6 +68,12 @@ struct Sprites {
     graves: Vec<Texture>,
     arrow: Texture,
     fireball: Texture,
+}
+
+#[derive(geng::Assets)]
+struct Sounds {
+    select: geng::Sound,
+    shoot: geng::Sound,
 }
 
 macro_rules! sprites_init {

@@ -298,6 +298,10 @@ impl GameState {
             }
         }
 
+        if !projectiles.is_empty() {
+            self.assets.sounds.shoot.play();
+        }
+
         for (position, direction) in projectiles {
             self.projectiles.push(Projectile::new(
                 Circle::new(position, constants::ARROW_RADIUS),
