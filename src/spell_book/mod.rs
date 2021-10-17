@@ -68,7 +68,8 @@ impl SpellBook {
     }
 
     fn draw_spells(&self, framebuffer: &mut ugli::Framebuffer) {
-        let mut next_position = Vec2::ZERO;
+        let scale = 0.5;
+        let mut next_position = vec2(-35.0, -35.0);
         let spell_grid = &self.spell_grid;
         for spell in &self.spells {
             let mut x_min = 0.0f32;
@@ -85,18 +86,18 @@ impl SpellBook {
             }
             let spell_width = x_max - x_min;
             let y_center = (y_max + y_min) / 2.0;
-            let offset = next_position - vec2(x_min, y_center);
+            let offset = next_position - vec2(x_min, y_center) * scale;
 
             for index in 0..(spell.key_points.len() - 1) {
                 let point = spell.key_points[index];
                 let next = spell.key_points[index + 1];
-                let start = spell_grid[point] + offset;
-                let end = spell_grid[next] + offset;
+                let start = spell_grid[point] * scale + offset;
+                let end = spell_grid[next] * scale + offset;
                 self.geng.draw_2d().circle(
                     framebuffer,
                     &self.camera,
                     start,
-                    constants::SPELL_POINT_RADIUS,
+                    constants::SPELL_POINT_RADIUS * scale,
                     Color::WHITE,
                 );
                 self.geng.draw_2d().draw(
@@ -105,7 +106,7 @@ impl SpellBook {
                     &Segment {
                         start,
                         end,
-                        width: constants::SPELL_CONNECTION_WIDTH,
+                        width: constants::SPELL_CONNECTION_WIDTH * scale,
                     }
                     .polygon(),
                     Color::WHITE,
@@ -114,12 +115,12 @@ impl SpellBook {
             }
             if spell.key_points.len() > 0 {
                 let point = spell.key_points[spell.key_points.len() - 1];
-                let position = spell_grid[point] + offset;
+                let position = spell_grid[point] * scale + offset;
                 self.geng.draw_2d().circle(
                     framebuffer,
                     &self.camera,
                     position,
-                    constants::SPELL_POINT_RADIUS,
+                    constants::SPELL_POINT_RADIUS * scale,
                     Color::WHITE,
                 );
             }
@@ -131,6 +132,10 @@ impl SpellBook {
     pub fn draw(&mut self, framebuffer: &mut ugli::Framebuffer) {
         // ugli::clear(framebuffer, Some(Color::BLACK), None);
         self.framebuffer_size = framebuffer.size().map(|x| x as f32);
+
+        if self.player_cast.is_some() {
+            self.draw_spells(framebuffer);
+        }
 
         if let Some(spell_cast) = &self.player_cast {
             let offset = spell_cast.origin();
