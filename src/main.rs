@@ -2,6 +2,7 @@ use geng::prelude::*;
 
 mod constants;
 mod game;
+mod menu;
 mod renderable;
 mod segment;
 mod spell_book;
@@ -124,7 +125,7 @@ fn main() {
                 let mut assets = assets.unwrap();
                 assets.sprites.init();
 
-                game::GameState::new(&geng, &Rc::new(assets))
+                menu::MenuState::new(&geng, &Rc::new(assets))
             }
         }),
     );
