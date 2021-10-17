@@ -29,7 +29,7 @@ pub const PLAYER_HIT_DAMAGE: f32 = 20.0;
 pub const PLAYER_HIT_FORCE: f32 = 25.0;
 
 pub const SPELL_WARRIOR_COST: f32 = 10.0;
-pub const SPELL_ARCHER_COST: f32 = 20.0;
+pub const SPELL_ARCHER_COST: f32 = 30.0;
 pub const SPELL_FIREBALL_COST: f32 = 50.0;
 
 pub const FIREBALL_SPEED: f32 = 40.0;
@@ -91,4 +91,4 @@ pub const SPELL_POINT_COLOR: Color<f32> = Color {
     a: 1.0,
 };
 
-pub const KNIGHT_KILL_MANA: f32 = 30.0;
+pub const KNIGHT_KILL_MANA: f32 = 10.0;
