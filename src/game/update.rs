@@ -138,19 +138,25 @@ impl GameState {
         self.projectiles.retain(|projectile| {
             let hit = projectile.hit;
             if hit {
-                for knight in knights.iter_mut() {
-                    let distance = (knight.circle.position - projectile.circle.position).len();
-                    if distance <= constants::FIREBALL_EXPLOSION_RADIUS {
-                        knight.health.change(-constants::FIREBALL_EXPLOSION_DAMAGE);
+                match projectile.typ {
+                    ProjectileType::Arrow => (),
+                    ProjectileType::Fireball => {
+                        for knight in knights.iter_mut() {
+                            let distance =
+                                (knight.circle.position - projectile.circle.position).len();
+                            if distance <= constants::FIREBALL_EXPLOSION_RADIUS {
+                                knight.health.change(-constants::FIREBALL_EXPLOSION_DAMAGE);
+                            }
+                        }
+                        particles.push((
+                            projectile.circle.position,
+                            0.25,
+                            10.0,
+                            Color::rgba(0.7, 0.1, 0.1, constants::PARTICLE_ALPHA),
+                            50,
+                        ));
                     }
                 }
-                particles.push((
-                    projectile.circle.position,
-                    0.25,
-                    10.0,
-                    Color::rgba(0.7, 0.1, 0.1, constants::PARTICLE_ALPHA),
-                    50,
-                ));
             }
             !hit
         });
