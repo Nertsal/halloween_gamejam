@@ -98,64 +98,10 @@ impl SpellCast {
     pub fn move_mouse(&mut self, mouse_pos: Vec2<f32>, spell_grid: &SpellGrid) {
         if let Some(point) = spell_grid.point(mouse_pos - self.initial_mouse_pos) {
             if Some(&point) != self.key_points.last() {
-                self.connect(point);
-            }
-        }
-    }
-
-    fn connect(&mut self, point: usize) {
-        match self.key_points.last() {
-            Some(&last) => {
-                let new_connection = Connection {
-                    from: last,
-                    to: point,
-                };
-                self.add_connection(new_connection);
-            }
-            None => {
                 self.key_points.push(point);
             }
         }
     }
-
-    fn add_connection(&mut self, connection: Connection<usize>) {
-        let connections = self.connections();
-        if connections
-            .iter()
-            .any(|con| is_connection_part_of(&connection, &con))
-        {
-            return;
-        }
-
-        self.key_points.push(connection.to);
-    }
-}
-
-fn is_connection_part_of(connection: &Connection<usize>, other: &Connection<usize>) -> bool {
-    if other.from != 0 && other.to != 0 || connection.from != 0 && connection.to != 0 {
-        return false;
-    }
-
-    let to = if connection.from == 0 {
-        connection.to
-    } else {
-        connection.from
-    };
-
-    let delta = (other.from as i32 - other.to as i32).abs() - 1;
-    if delta < 8 {
-        return false;
-    }
-
-    let count = (delta / 8) as usize;
-    for i in 0..count {
-        let middle = 1 + i * 8;
-        if to == middle {
-            return true;
-        }
-    }
-
-    false
 }
 
 #[derive(PartialOrd, Ord)]
@@ -188,35 +134,12 @@ fn vec_to_connections<T: Copy>(vec: &Vec<T>) -> Vec<Connection<T>> {
 }
 
 fn normalize_connections<T: Ord>(mut connections: Vec<Connection<T>>) -> Vec<Connection<T>> {
+    for connection in &mut connections {
+        if connection.from > connection.to {
+            std::mem::swap(&mut connection.from, &mut connection.to);
+        }
+    }
     connections.sort();
     connections.dedup();
     connections
-}
-
-#[test]
-fn connections() {
-    let con1 = Connection { from: 0, to: 1 };
-    let con2 = Connection { from: 0, to: 9 };
-    assert!(is_connection_part_of(&con1, &con2));
-    assert!(!is_connection_part_of(&con2, &con1));
-
-    let con1 = Connection { from: 1, to: 0 };
-    let con2 = Connection { from: 9, to: 0 };
-    assert!(is_connection_part_of(&con1, &con2));
-    assert!(!is_connection_part_of(&con2, &con1));
-
-    let con1 = Connection { from: 1, to: 0 };
-    let con2 = Connection { from: 0, to: 9 };
-    assert!(is_connection_part_of(&con1, &con2));
-    assert!(!is_connection_part_of(&con2, &con1));
-
-    let con1 = Connection { from: 0, to: 1 };
-    let con2 = Connection { from: 9, to: 0 };
-    assert!(is_connection_part_of(&con1, &con2));
-    assert!(!is_connection_part_of(&con2, &con1));
-
-    let con1 = Connection { from: 1, to: 2 };
-    let con2 = Connection { from: 9, to: 4 };
-    assert!(!is_connection_part_of(&con1, &con2));
-    assert!(!is_connection_part_of(&con2, &con1));
 }
