@@ -44,6 +44,7 @@ pub(crate) struct GameState {
     // Gameplay
     bounds: AABB<f32>,
     difficulty: Difficulty,
+    score: u32,
     spawn_timer: Option<(f32, usize)>,
     player: Player,
     skeletons_warriors: Vec<SkeletonWarrior>,
@@ -77,6 +78,7 @@ impl GameState {
             bounds: AABB::point(vec2(constants::ARENA_CENTER_X, constants::ARENA_CENTER_Y))
                 .extend_symmetric(vec2(constants::ARENA_WIDTH, constants::ARENA_HEIGHT) / 2.0),
             difficulty: Difficulty::new(),
+            score: 0,
             spawn_timer: None,
             player: Player::new(
                 Circle::new(Vec2::ZERO, constants::PLAYER_RADIUS),
@@ -148,5 +150,15 @@ impl geng::State for GameState {
         if let Some(command) = self.spell_book.handle_event(event) {
             self.perform_command(command);
         }
+    }
+
+    fn transition(&mut self) -> Option<geng::Transition> {
+        if self.player.health.is_alive() {
+            return None;
+        }
+
+        Some(geng::Transition::Switch(Box::new(
+            game_over::GameOverState::new(&self.geng, &self.assets, self.score),
+        )))
     }
 }

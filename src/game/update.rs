@@ -244,9 +244,11 @@ impl GameState {
 
         let player = &mut self.player;
         let assets = &self.assets;
+        let score = &mut self.score;
         self.knights.retain(|knight| {
             let alive = knight.health.is_alive();
             if !alive {
+                *score += 1;
                 player.mana.change(constants::KNIGHT_KILL_MANA);
                 new_particles.push((
                     knight.circle.position,

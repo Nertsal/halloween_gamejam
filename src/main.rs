@@ -2,6 +2,7 @@ use geng::prelude::*;
 
 mod constants;
 mod game;
+mod game_over;
 mod menu;
 mod renderable;
 mod segment;

@@ -58,6 +58,8 @@ impl GameState {
     }
 
     fn draw_game(&self, framebuffer: &mut ugli::Framebuffer) {
+        let camera_view = camera_view(&self.camera, self.framebuffer_size);
+
         // Border
         let center = self.bounds.center();
         let horizontal = AABB::ZERO.extend_symmetric(vec2(self.bounds.width(), 1.0) / 2.0);
@@ -171,6 +173,17 @@ impl GameState {
                 ugli::DrawMode::TriangleFan,
             );
         }
+
+        // Score
+        self.assets.font.draw(
+            framebuffer,
+            &self.camera,
+            &format!("SCORE: {}", self.score),
+            vec2(camera_view.x_max - 20.0, camera_view.y_max - 5.0),
+            geng::TextAlign::LEFT,
+            4.0,
+            Color::WHITE,
+        );
     }
 
     fn draw_ui(&self, framebuffer: &mut ugli::Framebuffer) {
