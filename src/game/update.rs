@@ -76,6 +76,7 @@ impl GameState {
 
                 player.health.change(-constants::KNIGHT_HIT_DAMAGE);
                 knight.health.change(-constants::PLAYER_HIT_DAMAGE);
+                self.assets.sounds.hit.play();
             }
         }
 
@@ -93,6 +94,7 @@ impl GameState {
 
                     skeleton.health.change(-constants::KNIGHT_HIT_DAMAGE);
                     knight.health.change(-constants::SKELETON_HIT_DAMAGE);
+                    self.assets.sounds.hit.play();
                 }
             }
             for skeleton in &mut self.skeletons_archers {
@@ -105,6 +107,7 @@ impl GameState {
 
                     skeleton.health.change(-constants::KNIGHT_HIT_DAMAGE);
                     knight.health.change(-constants::SKELETON_HIT_DAMAGE);
+                    self.assets.sounds.hit.play();
                 }
             }
             for projectile in &mut self.projectiles {
@@ -116,6 +119,7 @@ impl GameState {
                         ProjectileType::Arrow => constants::ARROW_HIT_DAMAGE,
                         ProjectileType::Fireball => constants::FIREBALL_HIT_DAMAGE,
                     });
+                    self.assets.sounds.hit.play();
                 }
             }
         }

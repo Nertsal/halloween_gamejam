@@ -74,6 +74,7 @@ struct Sprites {
 struct Sounds {
     select: geng::Sound,
     shoot: geng::Sound,
+    hit: geng::Sound,
 }
 
 macro_rules! sprites_init {
