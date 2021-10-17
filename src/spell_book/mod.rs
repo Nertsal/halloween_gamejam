@@ -150,6 +150,17 @@ impl SpellBook {
                 );
             }
 
+            for point in spell_cast.key_points() {
+                let point = self.spell_grid[point];
+                self.geng.draw_2d().circle(
+                    framebuffer,
+                    &self.camera,
+                    point + offset,
+                    constants::SPELL_POINT_RADIUS,
+                    constants::SPELL_POINT_COLOR,
+                );
+            }
+
             for connection in spell_cast.connections() {
                 let start = self.spell_grid[connection.from] + offset;
                 let end = self.spell_grid[connection.to] + offset;
@@ -162,7 +173,7 @@ impl SpellBook {
                         width: constants::SPELL_CONNECTION_WIDTH,
                     }
                     .polygon(),
-                    Color::WHITE,
+                    constants::SPELL_POINT_COLOR,
                     ugli::DrawMode::TriangleFan,
                 );
             }

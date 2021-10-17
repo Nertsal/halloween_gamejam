@@ -93,6 +93,10 @@ impl SpellCast {
         self.initial_mouse_pos
     }
 
+    pub fn key_points<'a>(&'a self) -> impl Iterator<Item = usize> + 'a {
+        self.key_points.iter().copied()
+    }
+
     pub fn connections(&self) -> Vec<Connection<usize>> {
         vec_to_connections(&self.key_points)
     }
