@@ -68,6 +68,8 @@ struct Sprites {
     graves: Vec<Texture>,
     arrow: Texture,
     fireball: Texture,
+    dead_knight: Texture,
+    bone: Texture,
 }
 
 #[derive(geng::Assets)]
@@ -94,7 +96,9 @@ impl Sprites {
             self.knight,
             self.castle,
             self.arrow,
-            self.fireball
+            self.fireball,
+            self.dead_knight,
+            self.bone
         );
         for grave in &mut self.graves {
             Rc::get_mut(grave)

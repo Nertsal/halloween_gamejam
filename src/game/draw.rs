@@ -11,7 +11,7 @@ impl Renderable for (&Circle, &Sprite) {
         draw_2d: &Rc<geng::Draw2D>,
         camera: &Camera2d,
     ) {
-        let mut aabb = AABB::point(self.0.position).extend_uniform(self.0.radius);
+        let mut aabb = self.0.aabb();
         if self.1.flipped {
             std::mem::swap(&mut aabb.x_min, &mut aabb.x_max);
         }
@@ -90,13 +90,30 @@ impl GameState {
 
         // Draw particles
         for particle in &self.particles {
-            self.geng.draw_2d().circle(
-                framebuffer,
-                &self.camera,
-                particle.circle.position,
-                particle.circle.radius,
-                particle.color,
-            );
+            match &particle.texture {
+                ParticleTexture::Plain { color } => {
+                    self.geng.draw_2d().circle(
+                        framebuffer,
+                        &self.camera,
+                        particle.circle.position,
+                        particle.circle.radius,
+                        *color,
+                    );
+                }
+                ParticleTexture::Textured { texture, alpha } => {
+                    self.geng.draw_2d().draw_textured(
+                        framebuffer,
+                        &self.camera,
+                        &rotate_texture(
+                            particle.circle.aabb(),
+                            vec2(1.0, 0.0).rotate(particle.rotation),
+                        ),
+                        texture,
+                        Color::rgba(1.0, 1.0, 1.0, *alpha),
+                        ugli::DrawMode::TriangleFan,
+                    );
+                }
+            }
         }
 
         let entities =
@@ -140,35 +157,10 @@ impl GameState {
 
         // Projectiles
         for projectile in &self.projectiles {
-            let direction = projectile.velocity.normalize();
-            let forward = direction * projectile.circle.radius * 2.0;
-            let sideward = forward.rotate_90();
-            let corner = projectile.circle.position - (forward + sideward) / 2.0;
             self.geng.draw_2d().draw_textured(
                 framebuffer,
                 &self.camera,
-                &[
-                    TexturedVertex {
-                        a_pos: corner,
-                        a_color: Color::WHITE,
-                        a_vt: vec2(0.0, 0.0),
-                    },
-                    TexturedVertex {
-                        a_pos: corner + forward,
-                        a_color: Color::WHITE,
-                        a_vt: vec2(1.0, 0.0),
-                    },
-                    TexturedVertex {
-                        a_pos: corner + forward + sideward,
-                        a_color: Color::WHITE,
-                        a_vt: vec2(1.0, 1.0),
-                    },
-                    TexturedVertex {
-                        a_pos: corner + sideward,
-                        a_color: Color::WHITE,
-                        a_vt: vec2(0.0, 1.0),
-                    },
-                ],
+                &rotate_texture(projectile.circle.aabb(), projectile.velocity),
                 &projectile.texture,
                 Color::WHITE,
                 ugli::DrawMode::TriangleFan,
@@ -253,4 +245,33 @@ fn camera_view(camera: &geng::Camera2d, framebuffer_size: Vec2<f32>) -> AABB<f32
     let vertical_fov = camera.fov;
     let horizontal_fov = framebuffer_size.x * vertical_fov / framebuffer_size.y;
     AABB::ZERO.extend_symmetric(vec2(horizontal_fov, vertical_fov) / 2.0)
+}
+
+fn rotate_texture(aabb: AABB<f32>, forward_direction: Vec2<f32>) -> [TexturedVertex; 4] {
+    let forward_direction = forward_direction.normalize();
+    let forward = forward_direction * aabb.width();
+    let sideward = forward_direction.rotate_90() * aabb.height();
+    let corner = aabb.bottom_left();
+    [
+        TexturedVertex {
+            a_pos: corner,
+            a_color: Color::WHITE,
+            a_vt: vec2(0.0, 0.0),
+        },
+        TexturedVertex {
+            a_pos: corner + forward,
+            a_color: Color::WHITE,
+            a_vt: vec2(1.0, 0.0),
+        },
+        TexturedVertex {
+            a_pos: corner + forward + sideward,
+            a_color: Color::WHITE,
+            a_vt: vec2(1.0, 1.0),
+        },
+        TexturedVertex {
+            a_pos: corner + sideward,
+            a_color: Color::WHITE,
+            a_vt: vec2(0.0, 1.0),
+        },
+    ]
 }

@@ -137,7 +137,7 @@ impl GameState {
     }
 
     fn kill(&mut self) {
-        let mut particles = Vec::new();
+        let mut new_particles = Vec::new();
         let knights = &mut self.knights;
         self.projectiles.retain(|projectile| {
             let hit = projectile.hit;
@@ -152,11 +152,13 @@ impl GameState {
                                 knight.health.change(-constants::FIREBALL_EXPLOSION_DAMAGE);
                             }
                         }
-                        particles.push((
+                        new_particles.push((
                             projectile.circle.position,
                             0.25,
                             10.0,
-                            Color::rgba(0.7, 0.1, 0.1, constants::PARTICLE_ALPHA),
+                            ParticleTexture::Plain {
+                                color: Color::rgba(0.7, 0.1, 0.1, constants::PARTICLE_ALPHA),
+                            },
                             50,
                         ));
                     }
@@ -166,21 +168,60 @@ impl GameState {
         });
 
         let player = &mut self.player;
+        let assets = &self.assets;
         self.knights.retain(|knight| {
             let alive = knight.health.is_alive();
             if !alive {
                 player.mana.change(constants::KNIGHT_KILL_MANA);
+                new_particles.push((
+                    knight.circle.position,
+                    knight.circle.radius,
+                    0.0,
+                    ParticleTexture::Textured {
+                        texture: assets.sprites.dead_knight.clone(),
+                        alpha: constants::PARTICLE_ALPHA,
+                    },
+                    1,
+                ));
             }
             alive
         });
 
-        self.skeletons_warriors
-            .retain(|skeleton| skeleton.health.is_alive());
-        self.skeletons_archers
-            .retain(|skeleton| skeleton.health.is_alive());
+        self.skeletons_warriors.retain(|skeleton| {
+            let alive = skeleton.health.is_alive();
+            if !alive {
+                new_particles.push((
+                    skeleton.circle.position,
+                    1.0,
+                    20.0,
+                    ParticleTexture::Textured {
+                        texture: assets.sprites.bone.clone(),
+                        alpha: constants::PARTICLE_ALPHA,
+                    },
+                    5,
+                ));
+            }
+            alive
+        });
+        self.skeletons_archers.retain(|skeleton| {
+            let alive = skeleton.health.is_alive();
+            if !alive {
+                new_particles.push((
+                    skeleton.circle.position,
+                    1.0,
+                    20.0,
+                    ParticleTexture::Textured {
+                        texture: assets.sprites.bone.clone(),
+                        alpha: constants::PARTICLE_ALPHA,
+                    },
+                    5,
+                ));
+            }
+            alive
+        });
 
-        for (position, radius, speed, color, amount) in particles {
-            self.spawn_particles(position, radius, speed, color, amount);
+        for (position, radius, speed, texture, amount) in new_particles {
+            self.spawn_particles(position, radius, speed, texture, amount);
         }
     }
 
@@ -316,7 +357,13 @@ impl GameState {
         }
 
         for (position, radius, speed, color, amount) in particles {
-            self.spawn_particles(position, radius, speed, color, amount);
+            self.spawn_particles(
+                position,
+                radius,
+                speed,
+                ParticleTexture::Plain { color },
+                amount,
+            );
         }
     }
 
@@ -347,10 +394,16 @@ impl GameState {
 
     fn update_particles(&mut self, delta_time: f32) {
         for particle in &mut self.particles {
-            particle.color.a -= delta_time * constants::PARTICLE_DECAY_SPEED;
+            let alpha = particle.texture.alpha();
+            particle
+                .texture
+                .set_alpha(alpha - delta_time * constants::PARTICLE_DECAY_SPEED);
+
+            particle.rotation += particle.rotation_velocity * delta_time;
         }
 
         // Delete old particles
-        self.particles.retain(|particle| particle.color.a > 0.0);
+        self.particles
+            .retain(|particle| particle.texture.alpha() > 0.0);
     }
 }

@@ -1,5 +1,6 @@
 use super::*;
 
+#[derive(Clone)]
 pub struct Circle {
     pub position: Vec2<f32>,
     pub radius: f32,
@@ -8,6 +9,10 @@ pub struct Circle {
 impl Circle {
     pub fn new(position: Vec2<f32>, radius: f32) -> Self {
         Self { position, radius }
+    }
+
+    pub fn aabb(&self) -> AABB<f32> {
+        AABB::point(self.position).extend_uniform(self.radius)
     }
 
     pub fn collision(&self, other: &Self) -> Option<Collision> {
