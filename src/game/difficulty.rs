@@ -1,5 +1,3 @@
-use super::*;
-
 pub struct Difficulty {
     time: f32,
     stage: u32,

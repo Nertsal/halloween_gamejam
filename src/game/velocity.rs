@@ -16,6 +16,6 @@ impl Velocity {
     }
 
     pub fn accelerate(&mut self, delta_time: f32) {
-        self.current += (self.target - self.current).clamp(self.acceleration * delta_time);
+        self.current += (self.target - self.current).clamp_len(..=self.acceleration * delta_time);
     }
 }

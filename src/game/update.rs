@@ -343,7 +343,7 @@ impl GameState {
             self.player.sprite.flipped = true;
         }
 
-        let move_direction = vec2(move_x, move_y).clamp(1.0);
+        let move_direction = vec2(move_x, move_y).clamp_len(..=1.0);
         self.player.velocity = self.player.speed * move_direction;
     }
 

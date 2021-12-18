@@ -43,7 +43,7 @@ impl SkeletonWarrior {
 
     pub fn target(&mut self, target_pos: Vec2<f32>) {
         let direction = target_pos - self.circle.position;
-        self.velocity.target = direction.clamp(self.speed);
+        self.velocity.target = direction.clamp_len(..=self.speed);
     }
 }
 
@@ -84,7 +84,7 @@ impl SkeletonArcher {
 
     pub fn target(&mut self, target_pos: Vec2<f32>) {
         let direction = target_pos - self.circle.position;
-        self.velocity.target = direction.clamp(self.speed);
+        self.velocity.target = direction.clamp_len(..=self.speed);
     }
 }
 
